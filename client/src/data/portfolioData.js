@@ -61,22 +61,42 @@ export const portfolioData = {
       phase: "Phase 01",
       year: "2022 – 2024",
       title: "Foundations & Algorithmic Thinking",
+      institution: "Pace Junior Science College, Thane",
       badge: "FOUNDATION",
-      description: "Completed higher secondary coursework at Pace Junior Science College, Thane. Built foundational programming competence, web protocols, and algorithmic problem-solving."
+      status: "COMPLETED",
+      description: "Completed higher secondary education with distinction in Science & Mathematics. Built rigorous foundations in programming logic, data structures, and computer science principles.",
+      tags: ["C++", "Algorithms", "Mathematics", "Problem Solving", "Web Standards"]
     },
     {
       phase: "Phase 02",
-      year: "2024",
-      title: "B.Tech CSE at ITM Skills University",
-      badge: "ACADEMIC MILESTONE",
-      description: "Enrolled in B.Tech CSE (maintaining 9.45 CGPA). Advanced coursework in C++ memory management, Java Object-Oriented Design, and Firebase cloud integrations."
+      year: "2024 – 2028",
+      title: "B.Tech Computer Science & Engineering",
+      institution: "ITM Skills University, Navi Mumbai",
+      badge: "9.45 CGPA",
+      status: "IN PROGRESS",
+      description: "Enrolled in B.Tech CSE maintaining top academic standing (9.45 CGPA). Deepened expertise in C++ memory management, Java Object-Oriented Architecture, relational databases, and operating systems.",
+      tags: ["Core CS", "Java OOP", "C++ Memory Mgmt", "MySQL & ACID", "Data Structures"]
     },
     {
       phase: "Phase 03",
-      year: "2024 – Present",
-      title: "Backend Systems, Cloud & APIs",
-      badge: "CURRENT FOCUS",
-      description: "Architecting full-stack MERN applications (LinguaHub), integrating AWS cloud services (S3, EC2, CloudWatch), deploying Docker containers, and exploring distributed system design."
+      year: "2024 – 2026",
+      title: "Full-Stack Backend, Cloud APIs & Microservices",
+      institution: "Independent & Open Source Production",
+      badge: "ACTIVE PRODUCTION",
+      status: "CURRENT FOCUS",
+      isCurrent: true,
+      description: "Architected 4 production web platforms (LinguaHub, HUFT Clone, Peer-Tutor, HomeConnect). Integrated AWS cloud suites (EC2, S3, RDS, CloudWatch), automated Docker containers, and high-speed RESTful APIs.",
+      tags: ["Node.js", "Express.js", "MongoDB", "AWS Suite", "Docker", "RESTful Architecture"]
+    },
+    {
+      phase: "Phase 04",
+      year: "2026 & Beyond",
+      title: "Cloud Native Orchestration & Scalable Systems",
+      institution: "Enterprise Systems & DevOps",
+      badge: "NEXT HORIZON",
+      status: "UPCOMING",
+      description: "Advancing into Kubernetes cluster orchestration, Infrastructure as Code with Terraform, Redis distributed caching, reverse-proxy load balancing, and high-concurrency microservices.",
+      tags: ["Kubernetes", "Terraform (IaC)", "Distributed Caching", "CI/CD Automation", "System Design"]
     }
   ],
 
