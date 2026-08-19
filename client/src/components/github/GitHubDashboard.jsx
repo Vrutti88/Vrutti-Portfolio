@@ -22,61 +22,152 @@ import {
   Radio,
   Sliders,
   Play,
-  Pause
+  Pause,
+  Type
 } from 'lucide-react';
 import { useGitHubData } from '../../hooks/useGitHubData';
 
+// 7-row Pixel Matrix for "VRUTTI"
+const PIXEL_LETTERS = {
+  V: [
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [0,1,0,1,0],
+    [0,1,0,1,0],
+    [0,0,1,0,0],
+    [0,0,1,0,0]
+  ],
+  R: [
+    [1,1,1,1,0],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,1,1,1,0],
+    [1,0,0,1,0],
+    [1,0,0,0,1],
+    [1,0,0,0,1]
+  ],
+  U: [
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [0,1,1,1,0]
+  ],
+  T: [
+    [1,1,1,1,1],
+    [0,0,1,0,0],
+    [0,0,1,0,0],
+    [0,0,1,0,0],
+    [0,0,1,0,0],
+    [0,0,1,0,0],
+    [0,0,1,0,0]
+  ],
+  I: [
+    [1,1,1],
+    [0,1,0],
+    [0,1,0],
+    [0,1,0],
+    [0,1,0],
+    [0,1,0],
+    [1,1,1]
+  ]
+};
+
+// Generate "VRUTTI" bitmap mask (7 rows x 37 cols)
+const generateVruttiMask = () => {
+  const word = ["V", "R", "U", "T", "T", "I"];
+  const padLeft = 2;
+  const padRight = 2;
+  
+  let totalCols = padLeft;
+  const letterPositions = [];
+  word.forEach((char, idx) => {
+    const matrix = PIXEL_LETTERS[char];
+    const width = matrix[0].length;
+    letterPositions.push({ char, startCol: totalCols, width });
+    totalCols += width + (idx < word.length - 1 ? 1 : 0);
+  });
+  totalCols += padRight;
+
+  const mask = Array.from({ length: 7 }, () => Array(totalCols).fill(0));
+  const letterCharMap = Array.from({ length: 7 }, () => Array(totalCols).fill(null));
+
+  letterPositions.forEach(({ char, startCol, width }) => {
+    const matrix = PIXEL_LETTERS[char];
+    for (let r = 0; r < 7; r++) {
+      for (let c = 0; c < width; c++) {
+        if (matrix[r][c]) {
+          mask[r][startCol + c] = 1;
+          letterCharMap[r][startCol + c] = char;
+        }
+      }
+    }
+  });
+
+  return { mask, letterCharMap, totalCols };
+};
+
+const { mask: VRUTTI_MASK, letterCharMap: LETTER_CHAR_MAP, totalCols: MATRIX_COLS } = generateVruttiMask();
+
 export const GitHubDashboard = () => {
-  const { profile, repos, commits, loading, lastUpdated, username } = useGitHubData();
+  const { profile, repos, commits, loading, username } = useGitHubData();
   const [activeTab, setActiveTab] = useState('LOG'); // 'LOG' | 'STATUS'
   const [selectedLanguage, setSelectedLanguage] = useState('ALL');
   const [hoveredCell, setHoveredCell] = useState(null);
-  const [animMode, setAnimMode] = useState('IDLE'); // 'IDLE' | 'WAVE' | 'SCAN' | 'RAIN' | 'EQUALIZER'
+  const [animMode, setAnimMode] = useState('IDLE'); // 'IDLE' | 'PULSE' | 'SCAN' | 'RAIN'
   const [copiedRepo, setCopiedRepo] = useState(null);
   const [scannerCol, setScannerCol] = useState(0);
 
-  // Month labels for the 36-week matrix
+  // Month labels across the 37-week matrix
   const months = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
   const dayLabels = ['Mon', '', 'Wed', '', 'Fri', '', ''];
 
-  // Generate realistic, dynamic 36-week contribution matrix (36 cols x 7 rows)
+  // Generate 37-week contribution matrix spelling "VRUTTI"
   const contributionMatrix = useMemo(() => {
     const matrix = [];
     const today = new Date();
     
-    for (let w = 0; w < 36; w++) {
+    for (let w = 0; w < MATRIX_COLS; w++) {
       const days = [];
       for (let d = 0; d < 7; d++) {
         // Date computation
-        const dayOffset = (35 - w) * 7 + (6 - d);
+        const dayOffset = (MATRIX_COLS - 1 - w) * 7 + (6 - d);
         const cellDate = new Date(today);
         cellDate.setDate(today.getDate() - dayOffset);
         
-        // Realistic commit density distribution
-        const dayOfWeek = cellDate.getDay();
-        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const seed = (w * 13 + d * 19 + 7) % 100;
-        
+        const isLetter = VRUTTI_MASK[d] && VRUTTI_MASK[d][w] === 1;
+        const letterChar = LETTER_CHAR_MAP[d] ? LETTER_CHAR_MAP[d][w] : null;
+
         let level = 0;
         let count = 0;
-        
-        if (seed > 88) {
-          level = 4;
-          count = isWeekend ? 6 : Math.floor(seed / 8) + 4;
-        } else if (seed > 68) {
-          level = 3;
-          count = isWeekend ? 3 : Math.floor(seed / 15) + 3;
-        } else if (seed > 42) {
-          level = 2;
-          count = 2;
-        } else if (seed > 22) {
-          level = 1;
-          count = 1;
+
+        if (isLetter) {
+          // Letter cells shine in bright high intensity
+          level = (w + d) % 2 === 0 ? 4 : 3;
+          count = Math.floor((w * 7 + d * 3) % 6) + 8; // 8 - 13 commits
+        } else {
+          // Ambient background cells
+          const bgSeed = (w * 17 + d * 23) % 100;
+          if (bgSeed > 82) {
+            level = 1;
+            count = 1;
+          } else if (bgSeed > 94) {
+            level = 2;
+            count = 2;
+          } else {
+            level = 0;
+            count = 0;
+          }
         }
 
         days.push({
           level,
           count,
+          isLetter,
+          letterChar,
           date: cellDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           dayName: cellDate.toLocaleDateString('en-US', { weekday: 'short' }),
           colIdx: w,
@@ -92,48 +183,48 @@ export const GitHubDashboard = () => {
   const totalHeatmapCommits = useMemo(() => {
     return contributionMatrix.reduce((acc, week) => 
       acc + week.reduce((dAcc, day) => dAcc + day.count, 0)
-    , 0) + 140; // baseline annual offset
+    , 0) + 120;
   }, [contributionMatrix]);
 
   // Scanner animation ticker when SCAN mode is active
   useEffect(() => {
     if (animMode !== 'SCAN') return;
     const interval = setInterval(() => {
-      setScannerCol((prev) => (prev + 1) % 36);
-    }, 90);
+      setScannerCol((prev) => (prev + 1) % MATRIX_COLS);
+    }, 80);
     return () => clearInterval(interval);
   }, [animMode]);
 
   const getHeatmapColor = (cell) => {
-    const { level, colIdx, rowIdx } = cell;
+    const { level, isLetter, colIdx } = cell;
 
     // Laser Scanner Mode
     if (animMode === 'SCAN') {
       const distance = Math.abs(colIdx - scannerCol);
-      if (distance === 0) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_18px_#00FF66] scale-125 z-20';
-      if (distance === 1) return 'bg-[#26A641] border-[#39D353] shadow-[0_0_10px_#26A641]';
+      if (distance === 0) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_20px_#00FF66] scale-130 z-20';
+      if (distance === 1) return 'bg-[#26A641] border-[#39D353] shadow-[0_0_12px_#26A641]';
       if (distance === 2) return 'bg-[#006D32] border-[#26A641]';
     }
 
     // Matrix Rain Mode
     if (animMode === 'RAIN') {
-      const isRainDrop = (colIdx * 3 + rowIdx * 7) % 11 === (Math.floor(Date.now() / 200) % 11);
-      if (isRainDrop) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_15px_#00FF66] scale-120 z-20';
+      const isRainDrop = (colIdx * 3 + cell.rowIdx * 7) % 11 === (Math.floor(Date.now() / 200) % 11);
+      if (isRainDrop) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_16px_#00FF66] scale-125 z-20';
     }
 
-    // Equalizer Mode
-    if (animMode === 'EQUALIZER') {
-      const colHeight = ((colIdx * 7) % 7);
-      if (6 - rowIdx <= colHeight) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_12px_#00FF66]';
+    // Letter Cells ("VRUTTI")
+    if (isLetter) {
+      if (level === 4) {
+        return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_12px_rgba(0,255,102,0.8)]';
+      }
+      return 'bg-[#26A641] border-[#39D353] shadow-[0_0_8px_rgba(38,166,65,0.6)]';
     }
 
-    // Default resting states with rich glowing borders
+    // Default resting background states
     switch (level) {
-      case 1: return 'bg-[#0E4429] border-[#006D32] shadow-[0_0_4px_rgba(0,109,50,0.4)]';
-      case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_8px_rgba(38,166,65,0.5)]';
-      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_12px_rgba(57,211,83,0.6)]';
-      case 4: return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_16px_#00FF66] animate-pulse';
-      default: return 'bg-[#0D1117] border-[#21262D]/80 hover:border-brand-green/50';
+      case 2: return 'bg-[#006D32]/80 border-[#26A641]/50';
+      case 1: return 'bg-[#0E4429]/60 border-[#006D32]/40';
+      default: return 'bg-[#090D14] border-[#1C2330]/70 hover:border-brand-green/40';
     }
   };
 
@@ -158,10 +249,10 @@ export const GitHubDashboard = () => {
     { name: 'HTML & CSS', percent: 9.6, color: '#E34F26', repos: 3 }
   ];
 
-  // Trigger temporary wave animation
-  const handleTriggerWave = () => {
-    setAnimMode('WAVE');
-    setTimeout(() => setAnimMode('IDLE'), 2600);
+  // Trigger pulse wave on "VRUTTI" letters
+  const handleTriggerPulse = () => {
+    setAnimMode('PULSE');
+    setTimeout(() => setAnimMode('IDLE'), 2400);
   };
 
   // Copy Repo Clone Command
@@ -294,9 +385,9 @@ export const GitHubDashboard = () => {
           </motion.div>
         </div>
 
-        {/* 🌟 INTERACTIVE CYBER ACTIVITY GRID WITH ANIMATION MODES */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#05080D] border border-brand-green/30 shadow-[0_0_35px_rgba(0,255,102,0.12)] mb-10 font-mono text-xs relative overflow-hidden group">
-          {/* Cyber matrix background grid */}
+        {/* 🌟 "VRUTTI" CYBER ACTIVITY MATRIX */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#05080D] border border-brand-green/35 shadow-[0_0_40px_rgba(0,255,102,0.14)] mb-10 font-mono text-xs relative overflow-hidden group">
+          {/* Cyber background matrix grid */}
           <div className="absolute inset-0 cyber-grid opacity-25 pointer-events-none" />
 
           {/* Continuous Ambient Scanner Beam */}
@@ -306,7 +397,7 @@ export const GitHubDashboard = () => {
                 left: ['-20%', '120%']
               }}
               transition={{
-                duration: 7,
+                duration: 6,
                 repeat: Infinity,
                 ease: "linear"
               }}
@@ -314,21 +405,21 @@ export const GitHubDashboard = () => {
             />
           </div>
 
-          {/* Matrix Controls & Animation Mode Switcher */}
+          {/* Matrix Header Controls */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 mb-6 border-b border-bg-border/60 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-brand-green/10 border border-brand-green/40 flex items-center justify-center shadow-glow-sm">
-                <GitBranch className="w-5 h-5 text-brand-green animate-pulse" />
+              <div className="w-10 h-10 rounded-2xl bg-brand-green/15 border border-brand-green/50 flex items-center justify-center shadow-glow-sm">
+                <Type className="w-5 h-5 text-brand-green animate-pulse" />
               </div>
               <div>
                 <div className="font-bold text-text-primary text-sm sm:text-base font-sans flex items-center gap-2">
-                  <span>Interactive Code Activity Matrix</span>
+                  <span>Custom Activity Matrix: <strong className="text-brand-green tracking-wider">VRUTTI</strong></span>
                   <span className="px-2 py-0.5 rounded bg-brand-green/20 text-brand-green text-[10px] font-mono font-bold">
-                    36 WEEKS
+                    ACTIVE
                   </span>
                 </div>
                 <div className="text-text-secondary text-xs">
-                  {totalHeatmapCommits} code commits tracked in real time
+                  {totalHeatmapCommits} commits across 37-week timeline
                 </div>
               </div>
             </div>
@@ -336,21 +427,21 @@ export const GitHubDashboard = () => {
             {/* Animation Controls Ribbon */}
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] text-text-muted hidden sm:inline mr-1">
-                ANIMATION FX:
+                INTERACTIVE FX:
               </span>
 
-              {/* 1. Wave Pulse */}
+              {/* 1. Pulse Name */}
               <button
-                onClick={handleTriggerWave}
+                onClick={handleTriggerPulse}
                 data-cursor="FX"
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border ${
-                  animMode === 'WAVE'
+                  animMode === 'PULSE'
                     ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
                     : 'bg-bg-surface border-bg-border text-brand-green hover:border-brand-green/50 hover:bg-brand-green/10'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${animMode === 'WAVE' ? 'animate-spin' : ''}`} />
-                <span>Wave Ripple</span>
+                <Sparkles className={`w-3.5 h-3.5 ${animMode === 'PULSE' ? 'animate-spin' : ''}`} />
+                <span>Illuminate "VRUTTI"</span>
               </button>
 
               {/* 2. Laser Scanner */}
@@ -381,7 +472,7 @@ export const GitHubDashboard = () => {
                 <span>{animMode === 'RAIN' ? 'Stop Rain' : 'Matrix Rain'}</span>
               </button>
 
-              {/* Reset to Normal */}
+              {/* Reset Button */}
               {animMode !== 'IDLE' && (
                 <button
                   onClick={() => setAnimMode('IDLE')}
@@ -401,8 +492,8 @@ export const GitHubDashboard = () => {
               ))}
             </div>
 
-            {/* Heatmap Grid Matrix with Day of Week Rows */}
-            <div className="flex gap-2 min-w-[720px] p-3 rounded-2xl bg-bg-darkest/90 border border-bg-border shadow-inner">
+            {/* Heatmap Grid Matrix with Day of Week Rows & "VRUTTI" letters */}
+            <div className="flex gap-2 min-w-[720px] p-3 rounded-2xl bg-bg-darkest/95 border border-bg-border shadow-inner">
               {/* Day of Week Labels Column */}
               <div className="flex flex-col justify-between text-[9px] text-text-muted font-mono pr-1 select-none">
                 {dayLabels.map((day, i) => (
@@ -410,7 +501,7 @@ export const GitHubDashboard = () => {
                 ))}
               </div>
 
-              {/* 36 Week Columns */}
+              {/* 37 Week Columns */}
               <div className="flex gap-1.5 flex-1">
                 {contributionMatrix.map((week, wIdx) => {
                   const isHoveredCol = hoveredCell?.colIdx === wIdx;
@@ -424,17 +515,18 @@ export const GitHubDashboard = () => {
                     >
                       {week.map((cell, dIdx) => {
                         const isHovered = hoveredCell === cell;
-                        const waveDelay = animMode === 'WAVE' ? (wIdx * 0.035 + dIdx * 0.02) : 0;
+                        const isLetter = cell.isLetter;
+                        const pulseDelay = animMode === 'PULSE' && isLetter ? (wIdx * 0.04 + dIdx * 0.02) : 0;
 
                         return (
                           <motion.div
                             key={dIdx}
-                            animate={animMode === 'WAVE' ? {
-                              scale: [1, 1.45, 1],
+                            animate={animMode === 'PULSE' && isLetter ? {
+                              scale: [1, 1.5, 1],
                               y: [0, -4, 0],
-                              boxShadow: ['0 0 0px #00FF66', '0 0 16px #00FF66', '0 0 4px #00FF66']
+                              boxShadow: ['0 0 0px #00FF66', '0 0 22px #00FF66', '0 0 10px #00FF66']
                             } : {}}
-                            transition={{ delay: waveDelay, duration: 0.45 }}
+                            transition={{ delay: pulseDelay, duration: 0.5 }}
                             onMouseEnter={() => setHoveredCell(cell)}
                             onMouseLeave={() => setHoveredCell(null)}
                             className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getHeatmapColor(cell)} ${
@@ -450,7 +542,7 @@ export const GitHubDashboard = () => {
                               >
                                 <div className="flex items-center gap-1.5 text-brand-green font-bold">
                                   <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-ping" />
-                                  <span>{cell.count} Contributions</span>
+                                  <span>{cell.count} Contributions {isLetter ? `[Letter '${cell.letterChar}']` : ''}</span>
                                 </div>
                                 <div className="text-[10px] text-text-muted">
                                   {cell.dayName}, {cell.date}
@@ -474,7 +566,7 @@ export const GitHubDashboard = () => {
               <span className="p-1 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400">
                 <Flame className="w-4 h-4 animate-bounce" />
               </span>
-              <span>Active Sprint Velocity: <strong className="text-brand-green">Full-Stack &amp; Cloud Deployment</strong></span>
+              <span>Matrix Display: <strong className="text-brand-green">"VRUTTI"</strong> • <span className="text-text-muted">Full-Stack &amp; Cloud Architecture</span></span>
             </div>
 
             {/* Streak & Consistency Badges */}
