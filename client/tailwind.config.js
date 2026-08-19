@@ -9,29 +9,29 @@ export default {
     extend: {
       colors: {
         bg: {
-          darkest: 'var(--bg-darkest)',
-          primary: 'var(--bg-primary)',
-          card: 'var(--bg-card)',
-          surface: 'var(--bg-surface)',
-          elevated: 'var(--bg-elevated)',
-          border: 'var(--border-muted)',
-          'border-bright': 'var(--border-bright)',
+          darkest: 'rgb(var(--bg-darkest) / <alpha-value>)',
+          primary: 'rgb(var(--bg-primary) / <alpha-value>)',
+          card: 'rgb(var(--bg-card) / <alpha-value>)',
+          surface: 'rgb(var(--bg-surface) / <alpha-value>)',
+          elevated: 'rgb(var(--bg-elevated) / <alpha-value>)',
+          border: 'rgb(var(--border-muted) / <alpha-value>)',
+          'border-bright': 'rgb(var(--border-bright) / <alpha-value>)',
         },
         brand: {
-          green: 'var(--green)',
-          'green-bright': 'var(--green-bright)',
+          green: 'rgb(var(--green) / <alpha-value>)',
+          'green-bright': 'rgb(var(--green-bright) / <alpha-value>)',
           'green-dark': '#00B347',
           'green-glow': 'var(--green-glow)',
-          purple: 'var(--purple)',
+          purple: 'rgb(var(--purple) / <alpha-value>)',
           'purple-glow': 'var(--purple-glow)',
-          cyan: 'var(--cyan)',
+          cyan: 'rgb(var(--cyan) / <alpha-value>)',
           'cyan-glow': 'var(--cyan-glow)',
         },
         text: {
-          primary: 'var(--text-primary)',
-          secondary: 'var(--text-secondary)',
-          muted: 'var(--text-muted)',
-          accent: 'var(--green)',
+          primary: 'rgb(var(--text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--text-secondary) / <alpha-value>)',
+          muted: 'rgb(var(--text-muted) / <alpha-value>)',
+          accent: 'rgb(var(--green) / <alpha-value>)',
         }
       },
       fontFamily: {
@@ -44,7 +44,7 @@ export default {
         'glow-lg': '0 0 35px var(--green-glow)',
         'glow-purple': '0 0 20px var(--purple-glow)',
         'glow-cyan': '0 0 20px var(--cyan-glow)',
-        'card-glow': '0 0 0 1px var(--border-bright), 0 8px 24px rgba(0, 0, 0, 0.4)',
+        'card-glow': '0 0 0 1px var(--border-bright), 0 8px 24px rgba(0, 0, 0, 0.12)',
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
