@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <rect width="64" height="64" rx="12" fill="#3B48CC" />
+    <ellipse cx="32" cy="18" rx="18" ry="7" fill="#FFFFFF" />
+    <ellipse cx="32" cy="18" rx="14" ry="5" fill="#3B48CC" />
+    <path fill="#FFFFFF" d="M14 18v12c0 3.87 8.06 7 18 7s18-3.13 18-7V18h-4v12c0 1.66-6.27 3-14 3s-14-1.34-14-3V18h-4z"/>
+    <path fill="#FFFFFF" d="M14 32v12c0 3.87 8.06 7 18 7s18-3.13 18-7V32h-4v12c0 1.66-6.27 3-14 3s-14-1.34-14-3V32h-4z"/>
+    <text x="32" y="47" fill="#FFFFFF" font-size="7" font-family="monospace" font-weight="900" text-anchor="middle">RDS</text>
+  </svg>

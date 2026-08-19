@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <rect width="64" height="64" rx="12" fill="#E05243" />
+    <path fill="#FFFFFF" d="M32 12L12 23.5v17L32 52l20-11.5v-17L32 12zm0 6l13.5 7.8L32 33.6 18.5 25.8 32 18zm-15 11l13 7.5v15.2l-13-7.5V29zm17 22.7V36.5l13-7.5v15.2l-13 7.5z" />
+    <text x="32" y="35" fill="#FFFFFF" font-size="8" font-family="monospace" font-weight="bold" text-anchor="middle">S3</text>
+  </svg>
