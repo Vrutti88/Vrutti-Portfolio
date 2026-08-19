@@ -154,7 +154,7 @@ export const seedProjects = [
       "Perfect fidelity match with production Figma design specifications"
     ],
     github: "https://github.com/Vrutti88/HUFT-Clone",
-    liveDemo: "https://github.com/Vrutti88/HUFT-Clone",
+    liveDemo: "https://heads-up-for-tails.vercel.app",
     documentation: "https://github.com/Vrutti88/HUFT-Clone#readme",
     featured: true
   },
