@@ -261,3 +261,55 @@ html.light .bg-bg-card {
 .animate-tooltip {
   animation: tooltipIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Skills Marquee Sliding Animations */
+@keyframes marqueeLeft {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-33.333333%); }
+}
+
+@keyframes marqueeRight {
+  0% { transform: translateX(-33.333333%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 34s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.animate-marquee-right {
+  animation: marqueeRight 34s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.animate-marquee-left-fast {
+  animation: marqueeLeft 28s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.animate-marquee-right-fast {
+  animation: marqueeRight 28s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.marquee-pause-hover:hover .animate-marquee-left,
+.marquee-pause-hover:hover .animate-marquee-right,
+.marquee-pause-hover:hover .animate-marquee-left-fast,
+.marquee-pause-hover:hover .animate-marquee-right-fast {
+  animation-play-state: paused !important;
+}
+
+.marquee-edge-mask {
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
