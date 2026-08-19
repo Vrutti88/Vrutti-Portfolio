@@ -102,7 +102,7 @@ export const seedProjects = [
       "Instant real-time synchronization of tutor schedules across connected clients"
     ],
     github: "https://github.com/Vrutti88/Peer-Tutor",
-    liveDemo: "https://github.com/Vrutti88/Peer-Tutor",
+    liveDemo: "https://peer-tutor-beryl.vercel.app",
     documentation: "https://github.com/Vrutti88/Peer-Tutor#readme",
     featured: true
   },
