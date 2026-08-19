@@ -211,15 +211,18 @@ Hobbies & Interests: Sketching, Exploring new technologies, Problem solving, Lea
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrint}
-                data-cursor="PRINT / SAVE PDF"
+              <a
+                href="/Vrutti_Patil_Resume.pdf"
+                download="Vrutti_Patil_Resume.pdf"
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="DOWNLOAD PDF"
                 className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-green text-black font-bold text-xs shadow-glow-sm hover:bg-brand-green-bright transition-all"
-                title="Download / Save as PDF"
+                title="Direct Download Official PDF Resume"
               >
                 <Download className="w-4 h-4" />
                 <span>Download PDF</span>
-              </button>
+              </a>
 
               <button
                 onClick={() => setIsPreviewOpen(true)}
@@ -295,23 +298,26 @@ Hobbies & Interests: Sketching, Exploring new technologies, Problem solving, Lea
                 <span className="font-bold text-xs text-brand-green">VRUTTI_PATIL_RESUME.PDF</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handlePrint}
+              <div className="flex items-center gap-2">
+                <a
+                  href="/Vrutti_Patil_Resume.pdf"
+                  download="Vrutti_Patil_Resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-green text-black font-bold text-xs shadow-sm hover:bg-brand-green-bright transition-all"
-                  title="Print or Save as PDF"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Print / Save PDF</span>
-                </button>
-
-                <button
-                  onClick={handleDownloadTxt}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 text-gray-200 hover:text-white border border-gray-700 text-xs transition-all"
-                  title="Download raw text"
+                  title="Direct download official PDF"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>TXT</span>
+                  <span>Download PDF</span>
+                </a>
+
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 text-gray-200 hover:text-white border border-gray-700 text-xs transition-all"
+                  title="Print paper version"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Print</span>
                 </button>
 
                 <button 
