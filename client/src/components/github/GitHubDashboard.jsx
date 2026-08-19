@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Github, 
   GitBranch, 
   GitCommit, 
-  Star, 
   Users, 
   FolderGit2, 
   ExternalLink, 
@@ -19,20 +18,26 @@ import {
   Copy,
   Check,
   Sparkles,
-  Layers
+  Layers,
+  Radio,
+  Sliders,
+  Play,
+  Pause
 } from 'lucide-react';
 import { useGitHubData } from '../../hooks/useGitHubData';
 
 export const GitHubDashboard = () => {
-  const { profile, repos, commits, totalStars, loading, lastUpdated, username } = useGitHubData();
-  const [activeTab, setActiveTab] = useState('LOG'); // 'LOG' | 'STATUS' | 'LANGS'
+  const { profile, repos, commits, loading, lastUpdated, username } = useGitHubData();
+  const [activeTab, setActiveTab] = useState('LOG'); // 'LOG' | 'STATUS'
   const [selectedLanguage, setSelectedLanguage] = useState('ALL');
   const [hoveredCell, setHoveredCell] = useState(null);
-  const [isWaveActive, setIsWaveActive] = useState(false);
+  const [animMode, setAnimMode] = useState('IDLE'); // 'IDLE' | 'WAVE' | 'SCAN' | 'RAIN' | 'EQUALIZER'
   const [copiedRepo, setCopiedRepo] = useState(null);
+  const [scannerCol, setScannerCol] = useState(0);
 
   // Month labels for the 36-week matrix
   const months = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+  const dayLabels = ['Mon', '', 'Wed', '', 'Fri', '', ''];
 
   // Generate realistic, dynamic 36-week contribution matrix (36 cols x 7 rows)
   const contributionMatrix = useMemo(() => {
@@ -73,6 +78,7 @@ export const GitHubDashboard = () => {
           level,
           count,
           date: cellDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          dayName: cellDate.toLocaleDateString('en-US', { weekday: 'short' }),
           colIdx: w,
           rowIdx: d
         });
@@ -89,13 +95,45 @@ export const GitHubDashboard = () => {
     , 0) + 140; // baseline annual offset
   }, [contributionMatrix]);
 
-  const getHeatmapColor = (level) => {
+  // Scanner animation ticker when SCAN mode is active
+  useEffect(() => {
+    if (animMode !== 'SCAN') return;
+    const interval = setInterval(() => {
+      setScannerCol((prev) => (prev + 1) % 36);
+    }, 90);
+    return () => clearInterval(interval);
+  }, [animMode]);
+
+  const getHeatmapColor = (cell) => {
+    const { level, colIdx, rowIdx } = cell;
+
+    // Laser Scanner Mode
+    if (animMode === 'SCAN') {
+      const distance = Math.abs(colIdx - scannerCol);
+      if (distance === 0) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_18px_#00FF66] scale-125 z-20';
+      if (distance === 1) return 'bg-[#26A641] border-[#39D353] shadow-[0_0_10px_#26A641]';
+      if (distance === 2) return 'bg-[#006D32] border-[#26A641]';
+    }
+
+    // Matrix Rain Mode
+    if (animMode === 'RAIN') {
+      const isRainDrop = (colIdx * 3 + rowIdx * 7) % 11 === (Math.floor(Date.now() / 200) % 11);
+      if (isRainDrop) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_15px_#00FF66] scale-120 z-20';
+    }
+
+    // Equalizer Mode
+    if (animMode === 'EQUALIZER') {
+      const colHeight = ((colIdx * 7) % 7);
+      if (6 - rowIdx <= colHeight) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_12px_#00FF66]';
+    }
+
+    // Default resting states with rich glowing borders
     switch (level) {
       case 1: return 'bg-[#0E4429] border-[#006D32] shadow-[0_0_4px_rgba(0,109,50,0.4)]';
-      case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_6px_rgba(38,166,65,0.5)]';
-      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_10px_rgba(57,211,83,0.6)]';
-      case 4: return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_14px_#00FF66] animate-pulse';
-      default: return 'bg-[#0D1117] border-[#21262D]/70 hover:border-brand-green/40';
+      case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_8px_rgba(38,166,65,0.5)]';
+      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_12px_rgba(57,211,83,0.6)]';
+      case 4: return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_16px_#00FF66] animate-pulse';
+      default: return 'bg-[#0D1117] border-[#21262D]/80 hover:border-brand-green/50';
     }
   };
 
@@ -120,10 +158,10 @@ export const GitHubDashboard = () => {
     { name: 'HTML & CSS', percent: 9.6, color: '#E34F26', repos: 3 }
   ];
 
-  // Trigger Matrix Ripple Wave Effect
+  // Trigger temporary wave animation
   const handleTriggerWave = () => {
-    setIsWaveActive(true);
-    setTimeout(() => setIsWaveActive(false), 2400);
+    setAnimMode('WAVE');
+    setTimeout(() => setAnimMode('IDLE'), 2600);
   };
 
   // Copy Repo Clone Command
@@ -256,123 +294,200 @@ export const GitHubDashboard = () => {
           </motion.div>
         </div>
 
-        {/* CYBER CONTRIBUTION HEATMAP MATRIX CARD */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#05080D] border border-bg-border shadow-2xl mb-10 font-mono text-xs relative overflow-hidden group">
-          {/* Subtle Cyber Grid Background */}
-          <div className="absolute inset-0 cyber-grid opacity-30 pointer-events-none" />
+        {/* 🌟 INTERACTIVE CYBER ACTIVITY GRID WITH ANIMATION MODES */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#05080D] border border-brand-green/30 shadow-[0_0_35px_rgba(0,255,102,0.12)] mb-10 font-mono text-xs relative overflow-hidden group">
+          {/* Cyber matrix background grid */}
+          <div className="absolute inset-0 cyber-grid opacity-25 pointer-events-none" />
 
-          {/* Continuous Scanning Laser Line across Heatmap */}
+          {/* Continuous Ambient Scanner Beam */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div
               animate={{
-                left: ['-10%', '110%']
+                left: ['-20%', '120%']
               }}
               transition={{
-                duration: 6,
+                duration: 7,
                 repeat: Infinity,
                 ease: "linear"
               }}
-              className="absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-brand-green/8 to-transparent pointer-events-none"
+              className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-brand-green/10 to-transparent pointer-events-none"
             />
           </div>
 
-          {/* Matrix Controls Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-bg-border/60 relative z-10">
+          {/* Matrix Controls & Animation Mode Switcher */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 mb-6 border-b border-bg-border/60 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-brand-green/10 border border-brand-green/30 flex items-center justify-center">
-                <GitBranch className="w-4 h-4 text-brand-green" />
+              <div className="w-10 h-10 rounded-2xl bg-brand-green/10 border border-brand-green/40 flex items-center justify-center shadow-glow-sm">
+                <GitBranch className="w-5 h-5 text-brand-green animate-pulse" />
               </div>
               <div>
-                <div className="font-bold text-text-primary text-sm font-sans flex items-center gap-2">
-                  <span>Year Activity Telemetry</span>
-                  <span className="w-2 h-2 rounded-full bg-brand-green animate-ping" />
+                <div className="font-bold text-text-primary text-sm sm:text-base font-sans flex items-center gap-2">
+                  <span>Interactive Code Activity Matrix</span>
+                  <span className="px-2 py-0.5 rounded bg-brand-green/20 text-brand-green text-[10px] font-mono font-bold">
+                    36 WEEKS
+                  </span>
                 </div>
                 <div className="text-text-secondary text-xs">
-                  {totalHeatmapCommits} commits across 36 weeks
+                  {totalHeatmapCommits} code commits tracked in real time
                 </div>
               </div>
             </div>
 
-            {/* Actions & Interactive Wave Pulse */}
-            <div className="flex items-center gap-3">
+            {/* Animation Controls Ribbon */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] text-text-muted hidden sm:inline mr-1">
+                ANIMATION FX:
+              </span>
+
+              {/* 1. Wave Pulse */}
               <button
                 onClick={handleTriggerWave}
-                data-cursor="PULSE"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg-surface border border-brand-green/30 hover:border-brand-green text-[11px] text-brand-green hover:bg-brand-green/10 transition-all font-bold"
+                data-cursor="FX"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border ${
+                  animMode === 'WAVE'
+                    ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                    : 'bg-bg-surface border-bg-border text-brand-green hover:border-brand-green/50 hover:bg-brand-green/10'
+                }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${isWaveActive ? 'animate-spin' : ''}`} />
-                <span>Trigger Matrix Pulse</span>
+                <Sparkles className={`w-3.5 h-3.5 ${animMode === 'WAVE' ? 'animate-spin' : ''}`} />
+                <span>Wave Ripple</span>
               </button>
 
-              {/* Activity Tier Legend */}
-              <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-text-muted bg-bg-darkest px-3 py-1.5 rounded-xl border border-bg-border">
-                <span>Less</span>
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#0D1117] border border-[#21262D]" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#0E4429]" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#006D32]" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#26A641]" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#39D353]" />
-                <span>More</span>
-              </div>
+              {/* 2. Laser Scanner */}
+              <button
+                onClick={() => setAnimMode(animMode === 'SCAN' ? 'IDLE' : 'SCAN')}
+                data-cursor="FX"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border ${
+                  animMode === 'SCAN'
+                    ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                    : 'bg-bg-surface border-bg-border text-cyan-400 hover:border-cyan-400/50 hover:bg-cyan-400/10'
+                }`}
+              >
+                <Radio className={`w-3.5 h-3.5 ${animMode === 'SCAN' ? 'animate-pulse' : ''}`} />
+                <span>{animMode === 'SCAN' ? 'Stop Scanner' : 'Laser Scanner'}</span>
+              </button>
+
+              {/* 3. Matrix Rain */}
+              <button
+                onClick={() => setAnimMode(animMode === 'RAIN' ? 'IDLE' : 'RAIN')}
+                data-cursor="FX"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border ${
+                  animMode === 'RAIN'
+                    ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                    : 'bg-bg-surface border-bg-border text-purple-400 hover:border-purple-400/50 hover:bg-purple-400/10'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>{animMode === 'RAIN' ? 'Stop Rain' : 'Matrix Rain'}</span>
+              </button>
+
+              {/* Reset to Normal */}
+              {animMode !== 'IDLE' && (
+                <button
+                  onClick={() => setAnimMode('IDLE')}
+                  className="px-2.5 py-1.5 rounded-xl bg-bg-darkest text-text-muted hover:text-text-primary text-[10px] border border-bg-border transition-all"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
 
           {/* Month Indicator Labels Row */}
           <div className="overflow-x-auto pb-1 relative z-10">
-            <div className="flex justify-between min-w-[700px] text-[10px] text-text-muted mb-2 px-1">
+            <div className="flex justify-between min-w-[720px] text-[10px] text-text-muted mb-2.5 pl-7 pr-1">
               {months.map((m, i) => (
-                <span key={i}>{m}</span>
+                <span key={i} className="font-semibold text-text-secondary">{m}</span>
               ))}
             </div>
 
-            {/* Heatmap Grid Matrix (36 columns x 7 rows) */}
-            <div className="flex gap-1.5 min-w-[700px] p-2 rounded-2xl bg-bg-darkest/70 border border-bg-border/60">
-              {contributionMatrix.map((week, wIdx) => (
-                <div key={wIdx} className="flex flex-col gap-1.5 flex-1">
-                  {week.map((cell, dIdx) => {
-                    const isHovered = hoveredCell === cell;
-                    const waveDelay = isWaveActive ? (wIdx * 0.04 + dIdx * 0.02) : 0;
+            {/* Heatmap Grid Matrix with Day of Week Rows */}
+            <div className="flex gap-2 min-w-[720px] p-3 rounded-2xl bg-bg-darkest/90 border border-bg-border shadow-inner">
+              {/* Day of Week Labels Column */}
+              <div className="flex flex-col justify-between text-[9px] text-text-muted font-mono pr-1 select-none">
+                {dayLabels.map((day, i) => (
+                  <span key={i} className="h-3 flex items-center">{day}</span>
+                ))}
+              </div>
 
-                    return (
-                      <motion.div
-                        key={dIdx}
-                        animate={isWaveActive ? {
-                          scale: [1, 1.4, 1],
-                          backgroundColor: ['#0D1117', '#00FF66', cell.level === 0 ? '#0D1117' : undefined]
-                        } : {}}
-                        transition={{ delay: waveDelay, duration: 0.4 }}
-                        onMouseEnter={() => setHoveredCell(cell)}
-                        onMouseLeave={() => setHoveredCell(null)}
-                        className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getHeatmapColor(cell.level)} ${
-                          isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_12px_#00FF66]' : ''
-                        }`}
-                      >
-                        {/* Hover Tooltip Popup */}
-                        {isHovered && (
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-xl bg-[#030609] border border-brand-green text-[10px] font-mono text-text-primary shadow-[0_10px_25px_rgba(0,0,0,0.9)] whitespace-nowrap z-50 pointer-events-none animate-fadeIn">
-                            <span className="text-brand-green font-bold">{cell.count} commits</span> on {cell.date}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-4 border-x-transparent border-x-4 border-b-0 border-t-brand-green" />
-                          </div>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              ))}
+              {/* 36 Week Columns */}
+              <div className="flex gap-1.5 flex-1">
+                {contributionMatrix.map((week, wIdx) => {
+                  const isHoveredCol = hoveredCell?.colIdx === wIdx;
+
+                  return (
+                    <div 
+                      key={wIdx} 
+                      className={`flex flex-col gap-1.5 flex-1 rounded-sm transition-all duration-300 ${
+                        isHoveredCol ? 'bg-brand-green/10 px-0.5' : ''
+                      }`}
+                    >
+                      {week.map((cell, dIdx) => {
+                        const isHovered = hoveredCell === cell;
+                        const waveDelay = animMode === 'WAVE' ? (wIdx * 0.035 + dIdx * 0.02) : 0;
+
+                        return (
+                          <motion.div
+                            key={dIdx}
+                            animate={animMode === 'WAVE' ? {
+                              scale: [1, 1.45, 1],
+                              y: [0, -4, 0],
+                              boxShadow: ['0 0 0px #00FF66', '0 0 16px #00FF66', '0 0 4px #00FF66']
+                            } : {}}
+                            transition={{ delay: waveDelay, duration: 0.45 }}
+                            onMouseEnter={() => setHoveredCell(cell)}
+                            onMouseLeave={() => setHoveredCell(null)}
+                            className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getHeatmapColor(cell)} ${
+                              isHovered ? 'scale-150 z-30 ring-2 ring-white border-white shadow-[0_0_20px_#00FF66]' : ''
+                            }`}
+                          >
+                            {/* Hover Cyber Tooltip Popup */}
+                            {isHovered && (
+                              <motion.div 
+                                initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3.5 py-2 rounded-xl bg-[#030609] border border-brand-green text-[11px] font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] whitespace-nowrap z-50 pointer-events-none flex flex-col items-center gap-0.5"
+                              >
+                                <div className="flex items-center gap-1.5 text-brand-green font-bold">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-ping" />
+                                  <span>{cell.count} Contributions</span>
+                                </div>
+                                <div className="text-[10px] text-text-muted">
+                                  {cell.dayName}, {cell.date}
+                                </div>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-brand-green" />
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* Matrix Footer Status HUD */}
-          <div className="mt-5 pt-4 border-t border-bg-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-text-secondary relative z-10">
-            <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4 text-orange-400 animate-bounce" />
-              <span>Current Sprint Velocity: <strong className="text-brand-green">Active Pipeline</strong> (Full-Stack &amp; Cloud commits)</span>
+          <div className="mt-6 pt-4 border-t border-bg-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-text-secondary relative z-10">
+            <div className="flex items-center gap-2.5">
+              <span className="p-1 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400">
+                <Flame className="w-4 h-4 animate-bounce" />
+              </span>
+              <span>Active Sprint Velocity: <strong className="text-brand-green">Full-Stack &amp; Cloud Deployment</strong></span>
             </div>
 
-            <div className="flex items-center gap-3 text-text-muted text-[10px]">
-              <span>🔥 Current Streak: <strong className="text-text-primary">18 Days</strong></span>
-              <span>•</span>
-              <span>⚡ Max Streak: <strong className="text-text-primary">42 Days</strong></span>
+            {/* Streak & Consistency Badges */}
+            <div className="flex items-center gap-3 text-text-muted text-[11px]">
+              <span className="px-2.5 py-1 rounded-xl bg-bg-surface border border-bg-border text-text-primary font-bold flex items-center gap-1">
+                <Flame className="w-3.5 h-3.5 text-orange-400" />
+                <span>18 Day Streak</span>
+              </span>
+              <span className="hidden sm:inline">•</span>
+              <span className="px-2.5 py-1 rounded-xl bg-bg-surface border border-bg-border text-brand-green font-bold flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5" />
+                <span>380+ Commits</span>
+              </span>
             </div>
           </div>
         </div>
