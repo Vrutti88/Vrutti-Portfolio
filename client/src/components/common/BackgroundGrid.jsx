@@ -57,7 +57,6 @@ export const BackgroundGrid = () => {
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-
         if (p.x < 0) p.x = width;
         if (p.x > width) p.x = 0;
         if (p.y < 0) p.y = height;
@@ -82,12 +81,12 @@ export const BackgroundGrid = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {/* Dark gradient base */}
-      <div className="absolute inset-0 bg-[#030609]" />
+      {/* Background base adapting to dark/light theme */}
+      <div className="absolute inset-0 bg-bg-darkest transition-colors duration-300" />
       
       {/* Cyber Grid Lines */}
-      <div className="absolute inset-0 cyber-grid opacity-30" />
-      <div className="absolute inset-0 cyber-grid-dense opacity-20" />
+      <div className="absolute inset-0 cyber-grid opacity-25 dark:opacity-30" />
+      <div className="absolute inset-0 cyber-grid-dense opacity-15 dark:opacity-20" />
 
       {/* Atmospheric Ambient Glows */}
       <div className="absolute -top-40 left-1/4 w-96 h-96 bg-brand-green/5 rounded-full blur-3xl pointer-events-none" />
@@ -96,7 +95,7 @@ export const BackgroundGrid = () => {
       <div className="absolute -bottom-40 right-1/4 w-96 h-96 bg-brand-green/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Network Particles Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-60" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40 dark:opacity-60" />
     </div>
   );
 };

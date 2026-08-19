@@ -12,11 +12,15 @@ import {
   X, 
   Terminal, 
   Command, 
-  Activity,
-  ExternalLink
+  Activity, 
+  Sun, 
+  Moon,
+  ExternalLink 
 } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
+  const { theme, toggleTheme, isDark } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -27,7 +31,6 @@ export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
     { name: '<Projects />', href: '#projects', icon: FolderGit2, id: 'projects' },
     { name: '<API Console />', href: '#api-console', icon: Activity, id: 'api-console' },
     { name: '<Journey />', href: '#journey', icon: Briefcase, id: 'journey' },
-    // { name: '<Achievements />', href: '#achievements', icon: Trophy, id: 'achievements' },
     { name: '<Contact />', href: '#contact', icon: Mail, id: 'contact' },
   ];
 
@@ -109,6 +112,21 @@ export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
 
           {/* Quick Action Utilities */}
           <div className="hidden sm:flex items-center gap-2">
+            {/* Theme Toggle (Light / Dark) */}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded bg-bg-surface/80 border border-bg-border hover:border-brand-green/50 text-text-secondary hover:text-brand-green transition-all relative group"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode (Default)"}
+              data-cursor="THEME"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
+              ) : (
+                <Moon className="w-4 h-4 text-brand-green group-hover:-rotate-12 transition-transform duration-300" />
+              )}
+            </button>
+
             {/* Command Palette Trigger */}
             <button
               onClick={onOpenCommandPalette}
@@ -130,18 +148,6 @@ export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
               <Terminal className="w-4 h-4 text-brand-green" />
             </button>
 
-            {/* GitHub Link */}
-            {/* <a
-              href="https://github.com/Vrutti88"
-              target="_blank"
-              rel="noreferrer"
-              className="p-1.5 rounded bg-bg-surface/80 border border-bg-border hover:border-brand-green/50 text-text-secondary hover:text-brand-green transition-all"
-              title="GitHub Profile (Vrutti88)"
-              data-cursor="GITHUB"
-            >
-              <Github className="w-4 h-4" />
-            </a> */}
-
             {/* Resume CTA */}
             <a
               href="#resume-section"
@@ -153,8 +159,18 @@ export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
             </a>
           </div>
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Mobile Actions (Theme Toggle + Terminal + Hamburger) */}
           <div className="flex items-center gap-2 lg:hidden">
+            {/* Mobile Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded bg-bg-surface border border-bg-border text-text-primary"
+              title={isDark ? "Light Mode" : "Dark Mode"}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-brand-green" />}
+            </button>
+
             <button
               onClick={onOpenTerminal}
               className="p-2 rounded bg-bg-surface border border-bg-border text-brand-green"
@@ -202,6 +218,21 @@ export const Navbar = ({ onOpenTerminal, onOpenCommandPalette }) => {
           </div>
 
           <div className="mt-auto pt-6 border-t border-bg-border flex flex-col gap-3">
+            {/* Theme Toggle Button in Mobile Drawer */}
+            <button
+              onClick={() => {
+                toggleTheme();
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-between p-2.5 rounded bg-bg-surface border border-bg-border text-xs text-text-primary hover:text-brand-green"
+            >
+              <div className="flex items-center gap-2">
+                {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-brand-green" />}
+                <span>Theme: {isDark ? 'Dark Mode (Active)' : 'Light Mode (Active)'}</span>
+              </div>
+              <span className="text-brand-green font-bold text-[10px]">Toggle</span>
+            </button>
+
             <a
               href="https://github.com/Vrutti88"
               target="_blank"
