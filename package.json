@@ -8,5 +8,8 @@
     "dev:client": "npm run dev --prefix client",
     "build:client": "npm run build --prefix client",
     "start:server": "npm run start --prefix server"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.28.1"
   }
 }
