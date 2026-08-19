@@ -11,10 +11,63 @@ import {
 } from 'lucide-react';
 import { ArchitectureDiagram } from './ArchitectureDiagram';
 
+// Fallback architecture nodes per project
+const defaultArchitectureNodes = {
+  'lingua-hub': [
+    { name: "React Client", role: "SPA UI / State", icon: "react" },
+    { name: "Node.js API", role: "Express Gateway", icon: "server" },
+    { name: "JWT & RBAC", role: "Auth Security", icon: "shield" },
+    { name: "MongoDB", role: "Database Cluster", icon: "database" }
+  ],
+  'peer-tutor': [
+    { name: "Student Web UI", role: "Search & Booking", icon: "user" },
+    { name: "Matching Engine", role: "Slot Pairing", icon: "cpu" },
+    { name: "Firebase Auth", role: "OAuth / Security", icon: "key" },
+    { name: "Firestore DB", role: "Cloud Database", icon: "cloud" }
+  ],
+  'huft-clone': [
+    { name: "Figma Tokens", role: "Design System", icon: "figma" },
+    { name: "Dynamic UI", role: "Responsive Catalog", icon: "layout" },
+    { name: "Cart Engine", role: "Discount Pricing", icon: "cart" },
+    { name: "Local Storage", role: "Persistent State", icon: "hard-drive" }
+  ],
+  'home-connect': [
+    { name: "Smart Portal", role: "Device Telemetry", icon: "layout" },
+    { name: "Node.js Hub", role: "IoT Gateway", icon: "server" },
+    { name: "MongoDB", role: "Device State Store", icon: "database" },
+    { name: "Cloud API", role: "Telemetry Stream", icon: "cloud" }
+  ],
+  'build-smart': [
+    { name: "React Portal", role: "Admin Dashboard", icon: "react" },
+    { name: "Nginx Gateway", role: "Reverse Proxy", icon: "shield" },
+    { name: "Node.js REST", role: "API Services", icon: "server" },
+    { name: "MariaDB & S3", role: "Relational / Storage", icon: "database" }
+  ],
+  'edu-stream': [
+    { name: "Git Webhook", role: "Source Control", icon: "git" },
+    { name: "Jenkins CI/CD", role: "Pipeline Runner", icon: "terminal" },
+    { name: "Docker Registry", role: "Image Store", icon: "package" },
+    { name: "K8s Cluster", role: "Orchestration", icon: "cloud" }
+  ]
+};
+
 export const ProjectCard = ({ project, onSelectCaseStudy }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const badgeUpper = (project.badge || '').toUpperCase();
+  // Inferred badge
+  const getBadge = () => {
+    if (project.badge) return project.badge;
+    const key = (project.title || project.shortTitle || project.id || '').toLowerCase();
+    if (key.includes('lingua') || key.includes('mern')) return 'MERN';
+    if (key.includes('peer') || key.includes('tutor') || key.includes('firebase')) return 'FIREBASE';
+    if (key.includes('huft') || key.includes('tails') || key.includes('pet')) return 'UI / UX';
+    if (key.includes('home') || key.includes('connect') || key.includes('build')) return 'CLOUD';
+    if (key.includes('edu') || key.includes('stream') || key.includes('devops')) return 'DEVOPS';
+    return 'FULL STACK';
+  };
+
+  const badgeText = getBadge();
+  const badgeUpper = badgeText.toUpperCase();
   
   const isMern = badgeUpper.includes('MERN') || badgeUpper.includes('FULL');
   const isFirebase = badgeUpper.includes('FIREBASE');
@@ -68,6 +121,13 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
     ? 'border-purple-500/30 hover:border-purple-400 hover:shadow-[0_10px_30px_rgba(168,85,247,0.18)]'
     : 'border-brand-green/30 hover:border-brand-green hover:shadow-[0_10px_30px_rgba(0,255,102,0.18)]';
 
+  // Fallback links & nodes
+  const githubLink = project.github || project.githubUrl || `https://github.com/Vrutti88/${project.shortTitle || project.id || 'LinguaHub'}`;
+  const liveDemoLink = project.liveDemo || project.liveUrl;
+  const projectNodes = (project.architectureNodes && project.architectureNodes.length > 0) 
+    ? project.architectureNodes 
+    : (defaultArchitectureNodes[project.id] || defaultArchitectureNodes['lingua-hub']);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -90,18 +150,12 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
           }}
         />
 
-        {/* Ambient Corner Radial Glow */}
-        {/* <div 
-          className="absolute top-0 right-0 w-36 h-36 rounded-full blur-2xl pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-60"
-          style={{ backgroundColor: accentColor }}
-        /> */}
-
         {/* Top Meta Bar */}
         <div>
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
               <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border transition-all ${badgeClasses}`}>
-                {project.badge}
+                {badgeText}
               </span>
 
               {/* Status pulse dot */}
@@ -115,7 +169,7 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
             </div>
 
             <span className="text-xs font-mono text-text-muted">
-              {project.year || '2024'}
+              {project.year || '2026'}
             </span>
           </div>
 
@@ -136,7 +190,7 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
 
           {/* Technology Badges */}
           <div className="flex flex-wrap gap-1.5 mb-4">
-            {project.technologies?.slice(0, 5).map((tech) => (
+            {(project.technologies || ['JavaScript', 'Node.js', 'Express.js', 'MongoDB']).slice(0, 5).map((tech) => (
               <span
                 key={tech}
                 className="px-2 py-0.5 rounded-md bg-bg-surface border border-bg-border text-[10px] font-mono text-text-primary transition-colors"
@@ -155,7 +209,7 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
           </div>
 
           {/* Embedded Architecture Flow Diagram */}
-          <ArchitectureDiagram nodes={project.architectureNodes} />
+          <ArchitectureDiagram nodes={projectNodes} />
         </div>
 
         {/* Action Buttons Row */}
@@ -173,9 +227,9 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
           </button>
 
           <div className="flex items-center gap-2">
-            {project.github && (
+            {githubLink && (
               <a
-                href={project.github}
+                href={githubLink}
                 target="_blank"
                 rel="noreferrer"
                 data-cursor="GITHUB"
@@ -190,9 +244,9 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
               </a>
             )}
 
-            {project.liveDemo && (
+            {liveDemoLink && (
               <a
-                href={project.liveDemo}
+                href={liveDemoLink}
                 target="_blank"
                 rel="noreferrer"
                 data-cursor="DEMO"
@@ -201,7 +255,7 @@ export const ProjectCard = ({ project, onSelectCaseStudy }) => {
                   borderColor: isHovered ? `${accentColor}50` : undefined,
                   color: isHovered ? accentColor : undefined
                 }}
-                title="Live Demo / Repository Link"
+                title="Live Demo Link"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>

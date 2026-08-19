@@ -338,7 +338,7 @@ export const ApiMonitor = () => {
                     <span className="text-brand-green">Live Server Data</span>
                   </div>
 
-                  <pre className="p-4 rounded-xl bg-bg-darkest border border-bg-border text-text-primary overflow-x-auto max-h-96 text-[11px] leading-relaxed select-text">
+                  <pre className="p-4 rounded-xl bg-[#030609] border border-bg-border text-text-primary overflow-x-auto overflow-y-auto max-h-[380px] text-[11px] leading-relaxed select-text font-mono scrollbar-thin scrollbar-thumb-brand-green/40 scrollbar-track-bg-darkest">
                     {responseOutput
                       ? JSON.stringify(responseOutput.data, null, 2)
                       : JSON.stringify(
