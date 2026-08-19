@@ -338,7 +338,15 @@ export const ApiMonitor = () => {
                     <span className="text-brand-green">Live Server Data</span>
                   </div>
 
-                  <pre className="p-4 rounded-xl bg-[#030609] border border-bg-border text-text-primary overflow-x-auto overflow-y-auto max-h-[380px] text-[11px] leading-relaxed select-text font-mono scrollbar-thin scrollbar-thumb-brand-green/40 scrollbar-track-bg-darkest">
+                  <pre 
+                    data-lenis-prevent="true"
+                    data-lenis-prevent-wheel="true"
+                    data-lenis-prevent-touch="true"
+                    onWheel={(e) => e.stopPropagation()}
+                    onTouchMove={(e) => e.stopPropagation()}
+                    style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+                    className="p-4 rounded-xl bg-[#030609] border border-bg-border text-text-primary overflow-x-auto overflow-y-auto max-h-[380px] text-[11px] leading-relaxed select-text font-mono overscroll-contain"
+                  >
                     {responseOutput
                       ? JSON.stringify(responseOutput.data, null, 2)
                       : JSON.stringify(
