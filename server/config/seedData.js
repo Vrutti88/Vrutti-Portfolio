@@ -49,7 +49,7 @@ export const seedProjects = [
       "100% test coverage on authentication and authorization middleware"
     ],
     github: "https://github.com/Vrutti88/LinguaHub",
-    liveDemo: "https://linguahub-660gz56g6-vrutti-patils-projects.vercel.app",
+    liveDemo: "https://linguahub-pearl.vercel.app",
     documentation: "https://github.com/Vrutti88/LinguaHub#readme",
     featured: true
   },
