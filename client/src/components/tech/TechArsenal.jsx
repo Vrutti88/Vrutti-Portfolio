@@ -12,12 +12,15 @@ import {
   Search,
   Sparkles,
   Zap,
-  CheckCircle2
+  ArrowRight,
+  ArrowLeft,
+  SlidersHorizontal,
+  LayoutGrid
 } from 'lucide-react';
 import { TechIcon } from './TechIcon';
 import { portfolioData } from '../../data/portfolioData';
 
-// Brand color palette for vibrant resting and glowing hover states
+// Brand color palette for vibrant resting, borders, and glowing hover states
 const BRAND_COLORS = {
   // Languages
   'javascript': '#F7DF1E',
@@ -26,6 +29,10 @@ const BRAND_COLORS = {
   'cpp': '#00599C',
   'java': '#EA2D2E',
   'python': '#3776AB',
+  'react': '#00D8FF',
+  'html5': '#E34F26',
+  'css3': '#1572B6',
+  'tailwindcss': '#06B6D4',
   
   // Backend
   'node.js': '#5FA04E',
@@ -56,14 +63,15 @@ const BRAND_COLORS = {
   'docker': '#2496ED',
   'jenkins': '#D24939',
   'git': '#F05032',
-  'github': '#E6EDF3',
+  'github': '#FFFFFF',
   'terraform': '#7B42BC',
   'kubernetes': '#326CE5',
   'eks': '#326CE5',
   'linux': '#FCC624',
   'shell scripting': '#00FF66',
-  'cicd': '#00FF66',
-  'ci/cd': '#00FF66',
+  'bash': '#00FF66',
+  'cicd': '#00C4CC',
+  'ci/cd': '#00C4CC',
 
   // System Design
   'microservices': '#A855F7',
@@ -84,24 +92,103 @@ export const TechArsenal = () => {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredSkill, setHoveredSkill] = useState(null);
+  const [viewMode, setViewMode] = useState('SLIDER'); // 'SLIDER' | 'GRID'
 
-  // Quick Featured Brand Strip
-  const featuredStack = [
-    { name: 'JavaScript', label: 'JavaScript' },
-    { name: 'Node.js', label: 'Node.js' },
-    { name: 'Express.js', label: 'Express.js' },
-    { name: 'Python', label: 'Python' },
-    { name: 'MongoDB', label: 'MongoDB' },
-    { name: 'MySQL', label: 'MySQL' },
-    { name: 'MariaDB', label: 'MariaDB' },
-    { name: 'Docker', label: 'Docker' },
-    { name: 'AWS', label: 'AWS' },
-    { name: 'Git', label: 'Git' },
-    { name: 'Linux', label: 'Linux' },
-  ];
+  // Flatten all skills into a single dictionary
+  const skillMap = useMemo(() => {
+    const map = {};
+    portfolioData.skillCategories.forEach((group) => {
+      group.skills.forEach((skill) => {
+        map[skill.name.toLowerCase()] = {
+          ...skill,
+          category: group.category
+        };
+      });
+    });
+    return map;
+  }, []);
 
+  // Define the 4 Alternating Sliding Rows
+  const rowDefinitions = useMemo(() => [
+    {
+      id: 'row-1',
+      title: 'Languages & Backend Runtimes',
+      direction: 'right', // Row 1: Sliding to the RIGHT
+      speedClass: 'animate-marquee-right',
+      skills: [
+        skillMap['javascript'] || { name: 'JavaScript', usage: 'Asynchronous runtime, modern ES6+' },
+        skillMap['node.js'] || { name: 'Node.js', usage: 'Event-driven high-throughput backend runtime' },
+        skillMap['express.js'] || { name: 'Express.js', usage: 'REST routing & middleware pipelines' },
+        skillMap['c++'] || { name: 'C++', usage: 'Data structures & memory optimization' },
+        skillMap['java'] || { name: 'Java', usage: 'OOP architecture & multithreading' },
+        skillMap['python'] || { name: 'Python', usage: 'Prototyping, scripting & automation' },
+        skillMap['rest apis'] || { name: 'REST APIs', usage: 'Stateless endpoints & JSON schemas' },
+        skillMap['graphql'] || { name: 'GraphQL', usage: 'Declarative schema & efficient queries' },
+        { name: 'React', usage: 'Declarative UI components & state management', category: 'LANGUAGES' },
+        { name: 'Tailwind CSS', usage: 'Utility-first modern responsive styling', category: 'DESIGN' },
+      ]
+    },
+    {
+      id: 'row-2',
+      title: 'Cloud Architecture & Database Stores',
+      direction: 'left', // Row 2: Sliding to the LEFT
+      speedClass: 'animate-marquee-left',
+      skills: [
+        skillMap['mongodb'] || { name: 'MongoDB', usage: 'Document modeling & aggregation pipelines' },
+        skillMap['aws'] || { name: 'AWS', usage: 'Cloud provisioning & scalable hosting' },
+        skillMap['mysql'] || { name: 'MySQL', usage: 'ACID transactions & relational schema' },
+        skillMap['ec2'] || { name: 'EC2', usage: 'Virtual compute instances & security groups' },
+        skillMap['mariadb'] || { name: 'MariaDB', usage: 'High-performance relational storage' },
+        skillMap['s3'] || { name: 'S3', usage: 'Object storage & pre-signed secure uploads' },
+        skillMap['firebase'] || { name: 'Firebase', usage: 'Firestore NoSQL & serverless auth' },
+        skillMap['rds'] || { name: 'RDS', usage: 'Managed database instances & backups' },
+        skillMap['iam'] || { name: 'IAM', usage: 'Least privilege access & security policies' },
+        skillMap['cloudwatch'] || { name: 'CloudWatch', usage: 'Server metrics, telemetry & threshold alarms' },
+        skillMap['vpc'] || { name: 'VPC', usage: 'Virtual private clouds & network isolation' },
+      ]
+    },
+    {
+      id: 'row-3',
+      title: 'DevOps Toolchain & Container Orchestration',
+      direction: 'right', // Row 3: Sliding to the RIGHT
+      speedClass: 'animate-marquee-right-fast',
+      skills: [
+        skillMap['docker'] || { name: 'Docker', usage: 'Multi-stage containers & Compose configs' },
+        skillMap['kubernetes'] || { name: 'Kubernetes', usage: 'Pod orchestration, ingress & scaling' },
+        skillMap['jenkins'] || { name: 'Jenkins', usage: 'Automated CI/CD build & test pipelines' },
+        skillMap['git'] || { name: 'Git', usage: 'Branching models & version control' },
+        skillMap['github'] || { name: 'GitHub', usage: 'Actions workflows & code reviews' },
+        skillMap['terraform'] || { name: 'Terraform', usage: 'Infrastructure as Code (IaC)' },
+        skillMap['eks'] || { name: 'EKS', usage: 'AWS managed Kubernetes clusters' },
+        skillMap['linux'] || { name: 'Linux', usage: 'Ubuntu/Debian server administration' },
+        skillMap['shell scripting'] || { name: 'Shell Scripting', usage: 'Bash/Zsh server maintenance scripts' },
+        skillMap['ci/cd'] || { name: 'CI/CD', usage: 'Continuous automated delivery pipelines' },
+      ]
+    },
+    {
+      id: 'row-4',
+      title: 'System Design & Modern Interface Engineering',
+      direction: 'left', // Row 4: Sliding to the LEFT
+      speedClass: 'animate-marquee-left-fast',
+      skills: [
+        skillMap['microservices'] || { name: 'Microservices', usage: 'Decoupled services & gateway routing' },
+        skillMap['figma'] || { name: 'Figma', usage: 'UI design tokens & wireframing systems' },
+        skillMap['scalability'] || { name: 'Scalability', usage: 'Stateless service tiers & concurrency' },
+        skillMap['canva'] || { name: 'Canva', usage: 'Visual branding & graphics production' },
+        skillMap['caching'] || { name: 'Caching', usage: 'In-memory strategies & TTL invalidation' },
+        skillMap['responsive design'] || { name: 'Responsive Design', usage: 'Mobile-first fluid grids & queries' },
+        skillMap['load balancing'] || { name: 'Load Balancing', usage: 'Reverse proxies & round-robin routing' },
+        skillMap['wireframing'] || { name: 'Wireframing', usage: 'Low-fidelity architectural user flows' },
+        skillMap['database design'] || { name: 'Database Design', usage: 'ER modeling, normalization & indexing' },
+        skillMap['prototyping'] || { name: 'Prototyping', usage: 'Interactive click-through user journeys' },
+        skillMap['rest api design'] || { name: 'REST API Design', usage: 'RFC schemas & payload validation' },
+      ]
+    }
+  ], [skillMap]);
+
+  // Categories list for filter tabs
   const categories = [
-    { id: 'ALL', name: 'All Skills', icon: Cpu },
+    { id: 'ALL', name: 'All Arsenal', icon: Cpu },
     { id: 'BACKEND', name: 'Backend & APIs', icon: Server },
     { id: 'CLOUD', name: 'Cloud (AWS)', icon: Cloud },
     { id: 'DEVOPS', name: 'DevOps & CI/CD', icon: Terminal },
@@ -111,7 +198,7 @@ export const TechArsenal = () => {
     { id: 'DESIGN', name: 'Design / UX', icon: Palette },
   ];
 
-  // Flatten all skills into a single unified list
+  // Flatten all skills for Grid mode / search queries
   const allSkillsList = useMemo(() => {
     const list = [];
     const seen = new Set();
@@ -132,8 +219,8 @@ export const TechArsenal = () => {
     return list;
   }, []);
 
-  // Filter skills based on active filter button and search query
-  const filteredSkills = useMemo(() => {
+  // Filtered skills for Grid mode
+  const filteredGridSkills = useMemo(() => {
     return allSkillsList.filter((skill) => {
       const matchesCategory = activeCategory === 'ALL' || skill.category === activeCategory;
       const matchesQuery = !searchQuery || 
@@ -145,8 +232,92 @@ export const TechArsenal = () => {
     });
   }, [allSkillsList, activeCategory, searchQuery]);
 
+  // Render individual Skill Card Chip
+  const renderSkillCard = (skill, keySuffix = '') => {
+    const isHovered = hoveredSkill?.name === skill.name;
+    const brandColor = BRAND_COLORS[skill.name.toLowerCase()] || '#00FF66';
+    const isMismatchedFilter = activeCategory !== 'ALL' && skill.category && skill.category !== activeCategory;
+    const isMatchingSearch = searchQuery && (
+      skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (skill.usage && skill.usage.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+    return (
+      <div
+        key={`${skill.name}-${keySuffix}`}
+        onMouseEnter={() => setHoveredSkill(skill)}
+        onMouseLeave={() => setHoveredSkill(null)}
+        data-cursor="INSPECT"
+        className={`relative inline-flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-[#05080D] border transition-all duration-300 group cursor-pointer flex-shrink-0 select-none ${
+          isMismatchedFilter ? 'opacity-30 grayscale' : 'opacity-100'
+        } ${isMatchingSearch ? 'ring-2 ring-brand-green ring-offset-2 ring-offset-bg-darkest shadow-glow-md' : ''}`}
+        style={{
+          borderColor: isHovered ? brandColor : `${brandColor}45`,
+          boxShadow: isHovered 
+            ? `0 0 28px ${brandColor}60, 0 0 12px ${brandColor}30, inset 0 0 14px ${brandColor}20` 
+            : `0 0 12px ${brandColor}12`,
+          transform: isHovered ? 'scale(1.08) translateY(-4px)' : 'scale(1)'
+        }}
+      >
+        {/* Subtle sweep light beam on hover */}
+        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform" />
+        </div>
+
+        {/* Brand Icon (Original Official Vector Image) */}
+        <div className="flex items-center justify-center group-hover:rotate-6 group-hover:scale-115 transition-transform duration-300 flex-shrink-0 drop-shadow-md">
+          <TechIcon name={skill.name} size={26} className="w-6 h-6 sm:w-7 sm:h-7" />
+        </div>
+
+        {/* Skill Name */}
+        <div className="flex flex-col">
+          <span 
+            className="font-mono text-xs sm:text-sm font-bold text-text-primary transition-colors whitespace-nowrap"
+            style={{
+              color: isHovered ? brandColor : undefined
+            }}
+          >
+            {skill.name}
+          </span>
+          {skill.level && (
+            <span className="text-[9px] font-mono text-text-muted hidden sm:inline">
+              {skill.level}
+            </span>
+          )}
+        </div>
+
+        {/* Pulsing Brand Dot */}
+        <span 
+          className="w-1.5 h-1.5 rounded-full opacity-60 group-hover:opacity-100 group-hover:animate-ping ml-0.5 flex-shrink-0"
+          style={{ backgroundColor: brandColor }}
+        />
+
+        {/* Tooltip on Hover */}
+        {isHovered && skill.usage && (
+          <div
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[#030609] border text-text-primary text-xs font-mono px-3.5 py-1.5 rounded-xl shadow-[0_12px_36px_rgba(0,0,0,0.95)] whitespace-nowrap z-50 pointer-events-none flex items-center gap-2 animate-fadeIn"
+            style={{ borderColor: brandColor }}
+          >
+            <span 
+              className="w-2 h-2 rounded-full animate-ping flex-shrink-0"
+              style={{ backgroundColor: brandColor }}
+            />
+            <span style={{ color: brandColor }} className="font-bold">{skill.name}:</span>
+            <span className="text-gray-200">{skill.usage}</span>
+            
+            {/* Downward Arrow */}
+            <div 
+              className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-6 border-x-transparent border-x-6 border-b-0"
+              style={{ borderTopColor: brandColor }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <section id="skills" className="py-20 relative z-10">
+    <section id="skills" className="py-20 relative z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-bg-border">
@@ -160,56 +331,37 @@ export const TechArsenal = () => {
             </h2>
           </div>
 
-          <p className="text-sm font-mono text-text-secondary mt-2 md:mt-0 max-w-md">
-            Production runtimes, databases, cloud architecture, and DevOps toolchains.
-          </p>
-        </div>
-
-        {/* TOP FEATURED BRAND STRIP */}
-        <div className="mb-10 p-5 rounded-2xl bg-bg-card border border-brand-green/30 shadow-xl relative">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b border-bg-border text-xs font-mono">
-            <span className="flex items-center gap-2 text-brand-green font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-brand-green animate-spin" style={{ animationDuration: '6s' }} />
-              CORE TECH STACK
-            </span>
-            <span className="text-text-muted text-[11px] hidden sm:inline">Production Mastered</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {featuredStack.map((tech, idx) => {
-              const brandColor = BRAND_COLORS[tech.name.toLowerCase()] || '#00FF66';
-
-              return (
-                <motion.div
-                  key={tech.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.04, duration: 0.3 }}
-                  whileHover={{ 
-                    scale: 1.08, 
-                    y: -3,
-                    boxShadow: `0 0 20px ${brandColor}50, inset 0 0 10px ${brandColor}20`
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#05080D] border transition-colors duration-200 cursor-pointer group"
-                  style={{
-                    borderColor: `${brandColor}40`
-                  }}
-                >
-                  {/* Subtle sweep light beam on hover */}
-                  <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full duration-700 bg-gradient-to-r from-transparent via-white/12 to-transparent transition-transform" />
-                  </div>
-
-                  <div className="flex items-center justify-center group-hover:rotate-6 group-hover:scale-115 transition-transform duration-300">
-                    <TechIcon name={tech.name} size={22} className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-mono font-bold text-text-primary group-hover:text-brand-green transition-colors">
-                    {tech.label}
-                  </span>
-                </motion.div>
-              );
-            })}
+          <div className="mt-4 md:mt-0 flex items-center gap-3">
+            <p className="text-sm font-mono text-text-secondary max-w-sm hidden sm:block">
+              Hover over any sliding technology to pause and inspect engineering specs.
+            </p>
+            {/* View Mode Switcher */}
+            <div className="flex items-center p-1 bg-bg-card border border-bg-border rounded-xl">
+              <button
+                onClick={() => setViewMode('SLIDER')}
+                title="Sliding Rows Mode"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                  viewMode === 'SLIDER' 
+                    ? 'bg-brand-green/20 text-brand-green border border-brand-green/40 shadow-glow-sm' 
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sliding Rows</span>
+              </button>
+              <button
+                onClick={() => setViewMode('GRID')}
+                title="Grid / Filter Mode"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                  viewMode === 'GRID' 
+                    ? 'bg-brand-green/20 text-brand-green border border-brand-green/40 shadow-glow-sm' 
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">All Grid</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -222,10 +374,8 @@ export const TechArsenal = () => {
               const isActive = activeCategory === cat.id;
 
               return (
-                <motion.button
+                <button
                   key={cat.id}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
                   onClick={() => setActiveCategory(cat.id)}
                   data-cursor="FILTER"
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono transition-all duration-200 border ${
@@ -236,7 +386,7 @@ export const TechArsenal = () => {
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{cat.name}</span>
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -248,128 +398,71 @@ export const TechArsenal = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter skills (e.g. Node, AWS, C++)..."
+              placeholder="Search technologies..."
               className="w-full pl-10 pr-3.5 py-2 rounded-xl bg-bg-surface/80 border border-bg-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-green transition-all focus:shadow-glow-sm"
             />
           </div>
         </div>
 
-        {/* Unified Skills Stream Container */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-bg-card border border-bg-border shadow-2xl relative">
+        {/* MAIN DISPLAY CONTAINER */}
+        <div className="p-4 sm:p-6 md:p-8 rounded-3xl bg-bg-card border border-bg-border shadow-2xl relative">
           {/* Top Status Header */}
           <div className="flex items-center justify-between pb-4 mb-6 border-b border-bg-border/60 text-xs font-mono text-text-secondary relative z-10">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-brand-green animate-ping" />
-              Showing <strong className="text-brand-green font-bold">{filteredSkills.length}</strong> technologies
-              {activeCategory !== 'ALL' && <span> in <span className="text-brand-green font-bold">{activeCategory}</span></span>}
+              <span>Multi-Directional Continuous Stream</span>
+              {activeCategory !== 'ALL' && <span> • Filter: <strong className="text-brand-green">{activeCategory}</strong></span>}
             </span>
-            <span className="text-text-muted text-[11px] hidden sm:inline flex items-center gap-1">
-              <Zap className="w-3 h-3 text-brand-green" />
-              Full Brand Color Badges Active
+            <span className="text-text-muted text-[11px] hidden sm:flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 text-brand-green font-bold">
+                <ArrowRight className="w-3.5 h-3.5" /> Row 1 &amp; 3 (Right)
+              </span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-1 text-purple-400 font-bold">
+                <ArrowLeft className="w-3.5 h-3.5" /> Row 2 &amp; 4 (Left)
+              </span>
             </span>
           </div>
 
-          {/* Flex-Wrap Chips Grid with Full Brand Colors */}
-          <motion.div 
-            layout 
-            className="flex flex-wrap gap-3.5 relative z-20 pt-4 pb-4"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredSkills.map((skill, idx) => {
-                const isHovered = hoveredSkill?.name === skill.name;
-                const brandColor = BRAND_COLORS[skill.name.toLowerCase()] || '#00FF66';
+          {/* VIEW MODE 1: ALTERNATING SLIDING ROWS */}
+          {viewMode === 'SLIDER' ? (
+            <div className="space-y-5 marquee-edge-mask py-2">
+              {rowDefinitions.map((row, rowIdx) => {
+                const isRight = row.direction === 'right';
 
                 return (
-                  <motion.div
-                    layout
-                    key={skill.name}
-                    initial={{ opacity: 0, scale: 0.8, y: 15 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.75, transition: { duration: 0.15 } }}
-                    transition={{ 
-                      type: "spring", 
-                      stiffness: 400, 
-                      damping: 25, 
-                      delay: Math.min(idx * 0.018, 0.3) 
-                    }}
-                    whileHover={{ 
-                      scale: 1.08, 
-                      y: -4,
-                      boxShadow: `0 0 24px ${brandColor}55, 0 0 12px ${brandColor}30, inset 0 0 12px ${brandColor}20`,
-                      borderColor: brandColor,
-                      zIndex: 40
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    onMouseEnter={() => setHoveredSkill(skill)}
-                    onMouseLeave={() => setHoveredSkill(null)}
-                    data-cursor="INSPECT"
-                    className="relative inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#05080D] border transition-all duration-200 group cursor-pointer"
-                    style={{
-                      borderColor: isHovered ? brandColor : `${brandColor}40`,
-                      boxShadow: isHovered 
-                        ? `0 0 24px ${brandColor}55` 
-                        : `0 0 10px ${brandColor}12`
-                    }}
+                  <div 
+                    key={row.id} 
+                    className="relative overflow-hidden marquee-pause-hover group py-1"
                   >
-                    {/* Inner light reflection wave on hover */}
-                    <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full duration-700 bg-gradient-to-r from-transparent via-white/12 to-transparent transition-transform" />
+                    {/* Infinite Marquee Stream (Repeated 3 times for seamless endless loop) */}
+                    <div className={`${row.speedClass} flex items-center gap-3.5`}>
+                      {/* Repeat 1 */}
+                      {row.skills.map((skill) => renderSkillCard(skill, `p1-r${rowIdx}`))}
+                      {/* Repeat 2 */}
+                      {row.skills.map((skill) => renderSkillCard(skill, `p2-r${rowIdx}`))}
+                      {/* Repeat 3 */}
+                      {row.skills.map((skill) => renderSkillCard(skill, `p3-r${rowIdx}`))}
                     </div>
-
-                    {/* Brand Icon (Full Color SVG Badge) */}
-                    <div className="flex items-center justify-center group-hover:scale-120 group-hover:rotate-6 transition-transform duration-300 flex-shrink-0 drop-shadow-md">
-                      <TechIcon name={skill.name} size={24} className="w-6 h-6" />
-                    </div>
-
-                    {/* Skill Name */}
-                    <span 
-                      className="font-mono text-xs sm:text-sm font-bold text-text-primary transition-colors whitespace-nowrap"
-                      style={{
-                        color: isHovered ? brandColor : undefined
-                      }}
-                    >
-                      {skill.name}
-                    </span>
-
-                    {/* Subtle Pulsing Dot with Brand Color */}
-                    <span 
-                      className="w-1.5 h-1.5 rounded-full opacity-60 group-hover:opacity-100 group-hover:animate-ping"
-                      style={{ backgroundColor: brandColor }}
-                    />
-
-                    {/* Highly-Visible Floating Tooltip with Arrow Tip */}
-                    {isHovered && skill.usage && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.92 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.92 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[#030609] border text-text-primary text-xs font-mono px-3.5 py-1.5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.9)] whitespace-nowrap z-50 pointer-events-none flex items-center gap-2"
-                        style={{ borderColor: brandColor }}
-                      >
-                        <span 
-                          className="w-2 h-2 rounded-full animate-ping flex-shrink-0"
-                          style={{ backgroundColor: brandColor }}
-                        />
-                        <span style={{ color: brandColor }} className="font-bold">{skill.name}:</span>
-                        <span className="text-gray-200">{skill.usage}</span>
-                        
-                        {/* Downward Arrow */}
-                        <div 
-                          className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-6 border-x-transparent border-x-6 border-b-0"
-                          style={{ borderTopColor: brandColor }}
-                        />
-                      </motion.div>
-                    )}
-                  </motion.div>
+                  </div>
                 );
               })}
-            </AnimatePresence>
-          </motion.div>
+            </div>
+          ) : (
+            /* VIEW MODE 2: GRID FILTER VIEW */
+            <motion.div 
+              layout 
+              className="flex flex-wrap gap-3.5 py-4 min-h-[220px]"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredGridSkills.map((skill) => renderSkillCard(skill, 'grid'))}
+              </AnimatePresence>
+            </motion.div>
+          )}
 
-          {/* Dedicated Live HUD Status Bar at bottom of card */}
-          <div className="mt-6 pt-4 border-t border-bg-border/60 flex items-center justify-between text-xs font-mono">
-            <div className="flex items-center gap-2 overflow-hidden">
+          {/* DEDICATED LIVE INSPECT STATUS CONSOLE (Always at bottom) */}
+          <div className="mt-8 pt-4 border-t border-bg-border/60 flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center gap-2 overflow-hidden flex-1 mr-4">
               <span className="text-brand-green font-bold flex items-center gap-1.5 flex-shrink-0">
                 <Terminal className="w-3.5 h-3.5" />
                 $ inspect:
@@ -386,14 +479,14 @@ export const TechArsenal = () => {
                 </span>
               ) : (
                 <span className="text-text-muted italic">
-                  Hover over any technology chip to inspect production engineering usage.
+                  Hover over any sliding technology badge to pause animation &amp; inspect details.
                 </span>
               )}
             </div>
 
             <div className="hidden sm:flex items-center gap-2 text-[11px] text-text-muted flex-shrink-0">
               <span className="w-2 h-2 rounded-full bg-brand-green" />
-              <span>Verified Full-Stack &amp; Cloud Stack</span>
+              <span>Active Marquee Stream</span>
             </div>
           </div>
         </div>
