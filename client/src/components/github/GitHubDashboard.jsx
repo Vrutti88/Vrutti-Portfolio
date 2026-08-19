@@ -1,34 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Github, 
   GitBranch, 
-  GitCommit, 
-  Users, 
   FolderGit2, 
   ExternalLink, 
   Terminal, 
   CheckCircle2,
   Code2,
-  Activity,
-  GitFork,
+  Users,
   Flame,
   Zap,
   Copy,
-  Check,
-  Sparkles,
-  Layers,
-  Radio,
-  Sliders,
-  Target,
-  Cloud,
-  Brain,
-  Rocket
+  Check
 } from 'lucide-react';
 import { useGitHubData } from '../../hooks/useGitHubData';
 
 export const GitHubDashboard = () => {
-  const { profile, repos, commits, loading, lastUpdated, username } = useGitHubData();
+  const { profile, repos, commits, username } = useGitHubData();
   const [activeTab, setActiveTab] = useState('LOG'); // 'LOG' | 'STATUS'
   const [selectedLanguage, setSelectedLanguage] = useState('ALL');
   const [hoveredCell, setHoveredCell] = useState(null);
@@ -107,14 +96,14 @@ export const GitHubDashboard = () => {
     , 0) + 65;
   }, [contributionMatrix]);
 
-  // Purple / Violet palette matching the screenshot
-  const getPurpleCellClass = (level) => {
+  // Authentic GitHub Brand Green palette
+  const getGreenCellClass = (level) => {
     switch (level) {
-      case 4: return 'bg-[#A855F7] border-[#C084FC] shadow-[0_0_10px_rgba(168,85,247,0.8)]';
-      case 3: return 'bg-[#7C3AED] border-[#9333EA] shadow-[0_0_6px_rgba(124,58,237,0.6)]';
-      case 2: return 'bg-[#4C1D95] border-[#6B21A8]';
-      case 1: return 'bg-[#2E1065]/90 border-[#3B0764]';
-      default: return 'bg-[#0E121B] border-[#1E293B]/70 hover:border-purple-500/50';
+      case 4: return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_12px_#00FF66] animate-pulse';
+      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_8px_rgba(38,166,65,0.6)]';
+      case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_4px_rgba(0,109,50,0.4)]';
+      case 1: return 'bg-[#0E4429] border-[#006D32]';
+      default: return 'bg-[#0D1117] border-[#21262D]/80 hover:border-brand-green/50';
     }
   };
 
@@ -131,7 +120,7 @@ export const GitHubDashboard = () => {
     }
   };
 
-  // Language Breakdown Data (Matching screenshot style)
+  // Language Breakdown Data (GitHub Green theme)
   const languageStats = [
     { name: 'JavaScript', percent: 57, iconBg: '#F7DF1E', iconText: 'JS' },
     { name: 'Python', percent: 22, iconBg: '#3776AB', iconText: 'Py' },
@@ -231,18 +220,18 @@ export const GitHubDashboard = () => {
 
           <motion.div 
             whileHover={{ scale: 1.03, y: -2 }}
-            className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-purple-400/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] transition-all relative overflow-hidden group"
+            className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-brand-green/50 hover:shadow-glow-sm transition-all relative overflow-hidden group"
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
-                <Flame className="w-4 h-4 text-purple-400 animate-pulse" />
+                <Flame className="w-4 h-4 text-brand-green animate-pulse" />
                 Year Activity
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 font-bold">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-brand-green/10 text-brand-green border border-brand-green/30 font-bold">
                 Live
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-purple-400 flex items-baseline gap-2">
+            <div className="text-3xl font-extrabold text-brand-green flex items-baseline gap-2">
               <span>{totalCommitsCount}+</span>
               <span className="text-xs text-text-muted font-normal">commits</span>
             </div>
@@ -270,13 +259,13 @@ export const GitHubDashboard = () => {
           </motion.div>
         </div>
 
-        {/* 🌟 ENGINEERING ACTIVITY GRID (Matching Screenshot Style) */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#04070D] border border-[#1E293B] shadow-2xl mb-10 relative overflow-hidden group">
+        {/* 🌟 ENGINEERING ACTIVITY GRID (Authentic GitHub Green Theme) */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl mb-8 relative overflow-hidden group">
           {/* Header inside Card */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4 pb-3 border-b border-[#1E293B]/60">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4 pb-3 border-b border-bg-border/60">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-bold text-purple-400 tracking-wider">
+                <h3 className="text-base sm:text-lg font-bold text-brand-green tracking-wider">
                   ENGINEERING ACTIVITY
                 </h3>
                 <span className="w-2 h-2 rounded-full bg-brand-green animate-ping" />
@@ -290,7 +279,7 @@ export const GitHubDashboard = () => {
               <span className="text-xs text-text-secondary">
                 $ git activity <strong className="text-brand-green">--year=2026</strong>
               </span>
-              <span className="text-base font-bold text-purple-400">
+              <span className="text-base font-bold text-brand-green">
                 2026
               </span>
             </div>
@@ -325,13 +314,13 @@ export const GitHubDashboard = () => {
                           key={dIdx}
                           onMouseEnter={() => setHoveredCell(cell)}
                           onMouseLeave={() => setHoveredCell(null)}
-                          className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getPurpleCellClass(cell.level)} ${
-                            isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_15px_#A855F7]' : ''
+                          className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getGreenCellClass(cell.level)} ${
+                            isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_15px_#00FF66]' : ''
                           }`}
                         >
                           {/* Hover Tooltip matching exact screenshot layout */}
                           {isHovered && (
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#090D16] border border-[#334155] text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none animate-fadeIn space-y-1.5">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#030609] border border-brand-green/60 text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none animate-fadeIn space-y-1.5">
                               <div className="text-[11px] font-bold text-text-primary">
                                 {cell.dateStr}
                               </div>
@@ -349,7 +338,7 @@ export const GitHubDashboard = () => {
                                   )}
                                   {cell.featureUpdates > 0 && (
                                     <div className="flex items-center gap-1.5 text-text-secondary">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
                                       <span>{cell.featureUpdates} Feature updates</span>
                                     </div>
                                   )}
@@ -363,7 +352,7 @@ export const GitHubDashboard = () => {
                               )}
                               
                               {/* Downward Pointer */}
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-[#334155]" />
+                              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-brand-green" />
                             </div>
                           )}
                         </div>
@@ -376,15 +365,15 @@ export const GitHubDashboard = () => {
           </div>
 
           {/* Heatmap Legend */}
-          <div className="mt-5 pt-3 border-t border-[#1E293B]/60 flex items-center justify-between text-[10px] text-text-muted">
+          <div className="mt-5 pt-3 border-t border-bg-border/60 flex items-center justify-between text-[10px] text-text-muted">
             <div className="flex items-center gap-2">
               <span>Less</span>
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-[3px] bg-[#0E121B] border border-[#1E293B]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#2E1065] border border-[#3B0764]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#4C1D95] border-[#6B21A8]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#7C3AED] border-[#9333EA]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#A855F7] border-[#C084FC]" />
+                <div className="w-3 h-3 rounded-[3px] bg-[#0D1117] border border-[#21262D]" />
+                <div className="w-3 h-3 rounded-[3px] bg-[#0E4429] border border-[#006D32]" />
+                <div className="w-3 h-3 rounded-[3px] bg-[#006D32] border border-[#26A641]" />
+                <div className="w-3 h-3 rounded-[3px] bg-[#26A641] border border-[#39D353]" />
+                <div className="w-3 h-3 rounded-[3px] bg-[#39D353] border border-[#00FF66]" />
               </div>
               <span>More</span>
             </div>
@@ -392,107 +381,48 @@ export const GitHubDashboard = () => {
             <div className="flex items-center gap-3">
               <span className="text-text-secondary">🔥 18 Day Active Sprint</span>
               <span>•</span>
-              <span className="text-purple-400 font-bold">{totalCommitsCount}+ Commits</span>
+              <span className="text-brand-green font-bold">{totalCommitsCount}+ Commits</span>
             </div>
           </div>
         </div>
 
-        {/* 🌟 LANGUAGE BREAKDOWN & SYSTEM OVERVIEW (Matching Screenshot Style) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
-          
-          {/* Card 1: LANGUAGE BREAKDOWN (Purple Progress Bars) */}
-          <div className="lg:col-span-7 p-6 rounded-3xl bg-[#04070D] border border-[#1E293B] shadow-xl">
-            <div className="pb-3 mb-4 border-b border-[#1E293B] flex items-center justify-between">
-              <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-purple-400" />
-                LANGUAGE BREAKDOWN
-              </h3>
-              <span className="text-[10px] text-text-muted">Production Codebase Weight</span>
-            </div>
+        {/* 🌟 LANGUAGE BREAKDOWN (Green GitHub Theme) */}
+        <div className="p-6 sm:p-7 rounded-3xl bg-bg-card border border-bg-border shadow-xl mb-10">
+          <div className="pb-3 mb-5 border-b border-bg-border flex items-center justify-between">
+            <h3 className="text-xs font-bold text-brand-green uppercase tracking-wider flex items-center gap-2">
+              <Code2 className="w-4 h-4 text-brand-green" />
+              LANGUAGE BREAKDOWN
+            </h3>
+            <span className="text-[10px] text-text-muted">Production Codebase Weight</span>
+          </div>
 
-            <div className="space-y-3.5">
-              {languageStats.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-xs gap-3">
-                  <div className="flex items-center gap-2 w-32">
-                    <span className="w-5 h-5 rounded bg-bg-surface border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {languageStats.map((item) => (
+              <div key={item.name} className="p-4 rounded-2xl bg-bg-surface/80 border border-bg-border flex flex-col justify-between space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded bg-bg-darkest border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
                       {item.iconText}
                     </span>
-                    <span className="text-text-primary font-semibold truncate">
+                    <span className="text-text-primary font-bold text-xs">
                       {item.name}
                     </span>
                   </div>
-
-                  <span className="text-text-secondary text-[11px] w-10 text-right font-bold">
+                  <span className="text-brand-green text-xs font-bold font-mono">
                     {item.percent}%
                   </span>
-
-                  {/* Purple Horizontal Progress Bar */}
-                  <div className="flex-1 h-2.5 rounded-full bg-[#0E121B] overflow-hidden border border-[#1E293B]">
-                    <div
-                      className="h-full rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.7)]"
-                      style={{ width: `${item.percent}%` }}
-                    />
-                  </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Vibrant Green Horizontal Progress Bar */}
+                <div className="h-2 w-full rounded-full bg-bg-darkest overflow-hidden border border-bg-border">
+                  <div
+                    className="h-full rounded-full bg-brand-green shadow-[0_0_10px_rgba(0,255,102,0.8)] transition-all duration-700"
+                    style={{ width: `${item.percent}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-
-          {/* Card 2: SYSTEM OVERVIEW */}
-          <div className="lg:col-span-5 p-6 rounded-3xl bg-[#04070D] border border-[#1E293B] shadow-xl">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E293B]">
-              <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider">
-                SYSTEM OVERVIEW
-              </h3>
-              <span className="flex items-center gap-1.5 text-brand-green text-[10px] font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-                ACTIVE
-              </span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted flex items-center gap-2">
-                  <Target className="w-3.5 h-3.5 text-purple-400" />
-                  Focus
-                </span>
-                <span className="text-brand-green font-semibold">
-                  Backend / APIs
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted flex items-center gap-2">
-                  <Code2 className="w-3.5 h-3.5 text-purple-400" />
-                  Stack
-                </span>
-                <span className="text-brand-green font-semibold">
-                  JS / Node / Python
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted flex items-center gap-2">
-                  <Cloud className="w-3.5 h-3.5 text-purple-400" />
-                  Infra
-                </span>
-                <span className="text-brand-green font-semibold">
-                  AWS / Docker / K8s
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted flex items-center gap-2">
-                  <Brain className="w-3.5 h-3.5 text-purple-400" />
-                  Mindset
-                </span>
-                <span className="text-brand-green font-semibold">
-                  Build. Learn. Secure.
-                </span>
-              </div>
-            </div>
-          </div>
-
         </div>
 
         {/* BOTTOM SECTION: INTERACTIVE DEVELOPER TERMINAL + REPOSITORIES */}
@@ -543,7 +473,7 @@ export const GitHubDashboard = () => {
                       {displayCommits.map((log, idx) => (
                         <div key={idx} className="flex items-start gap-2.5 text-[11px] leading-tight">
                           <span className="text-brand-green flex-shrink-0 font-bold">●</span>
-                          <span className="text-brand-purple font-bold flex-shrink-0">{log.hash}</span>
+                          <span className="text-purple-400 font-bold flex-shrink-0">{log.hash}</span>
                           <span className="text-text-primary line-clamp-2">{log.msg}</span>
                         </div>
                       ))}
@@ -558,7 +488,7 @@ export const GitHubDashboard = () => {
 
                     <div className="space-y-2 pt-2 text-[11px] text-text-secondary">
                       <div className="text-text-primary font-bold">On branch <span className="text-brand-green">main</span></div>
-                      <div>Your branch is up to date with <span className="text-purple-400">'origin/main'</span>.</div>
+                      <div>Your branch is up to date with <span className="text-brand-green">'origin/main'</span>.</div>
                       <div className="mt-3 p-3 rounded-xl bg-bg-surface/60 border border-bg-border space-y-1">
                         <div className="text-brand-green flex items-center gap-1.5 font-bold">
                           <CheckCircle2 className="w-3.5 h-3.5" />
