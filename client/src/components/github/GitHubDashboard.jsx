@@ -193,8 +193,8 @@ export const GitHubDashboard = () => {
           </div>
         </div>
 
-        {/* TOP 4 CYBER TELEMETRY CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* TOP 3 CYBER TELEMETRY CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <motion.div 
             whileHover={{ scale: 1.03, y: -2 }}
             className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-brand-green/50 hover:shadow-glow-sm transition-all font-mono relative overflow-hidden group"
@@ -237,7 +237,7 @@ export const GitHubDashboard = () => {
 
           <motion.div 
             whileHover={{ scale: 1.03, y: -2 }}
-            className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all font-mono relative overflow-hidden group"
+            className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all font-mono relative overflow-hidden group sm:col-span-2 lg:col-span-1"
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
@@ -253,26 +253,6 @@ export const GitHubDashboard = () => {
               <span className="text-xs text-text-muted font-normal">engineers</span>
             </div>
             <div className="text-[10px] text-text-muted mt-2">Community connections</div>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.03, y: -2 }}
-            className="p-5 rounded-3xl bg-bg-card border border-bg-border hover:border-yellow-400/50 hover:shadow-[0_0_20px_rgba(250,204,21,0.2)] transition-all font-mono relative overflow-hidden group"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-yellow-400" />
-                Stars &amp; Forks
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 font-bold">
-                Global
-              </span>
-            </div>
-            <div className="text-3xl font-extrabold text-yellow-400 flex items-baseline gap-2">
-              <span>{totalStars > 0 ? totalStars : '12+'}</span>
-              <span className="text-xs text-text-muted font-normal">stars</span>
-            </div>
-            <div className="text-[10px] text-text-muted mt-2">Repo community recognition</div>
           </motion.div>
         </div>
 
@@ -603,25 +583,24 @@ export const GitHubDashboard = () => {
                       {repo.language || 'Code'}
                     </span>
 
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1 text-yellow-400">
-                        <Star className="w-3 h-3" />
-                        {repo.stargazers_count || 0}
-                      </span>
-
-                      {/* Quick Clone Button */}
-                      <button
-                        onClick={() => handleCopyClone(repo.name, repo.html_url)}
-                        title="Copy Git Clone Command"
-                        className="p-1 rounded bg-bg-surface hover:bg-brand-green/20 hover:text-brand-green border border-bg-border transition-all flex items-center gap-1"
-                      >
-                        {copiedRepo === repo.name ? (
+                    {/* Quick Clone Button */}
+                    <button
+                      onClick={() => handleCopyClone(repo.name, repo.html_url)}
+                      title="Copy Git Clone Command"
+                      className="px-2 py-1 rounded-lg bg-bg-surface hover:bg-brand-green/20 hover:text-brand-green border border-bg-border transition-all flex items-center gap-1.5 text-[10px] text-text-secondary"
+                    >
+                      {copiedRepo === repo.name ? (
+                        <>
                           <Check className="w-3 h-3 text-brand-green" />
-                        ) : (
+                          <span className="text-brand-green font-bold">Copied</span>
+                        </>
+                      ) : (
+                        <>
                           <Copy className="w-3 h-3" />
-                        )}
-                      </button>
-                    </div>
+                          <span>Clone</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               ))}
