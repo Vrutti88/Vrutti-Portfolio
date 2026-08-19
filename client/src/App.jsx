@@ -86,7 +86,7 @@ export function App() {
         <EngineeringJourney />
         {/* <AchievementsSection /> */}
         <SystemArchitecture />
-        {/* <GitHubDashboard /> */}
+        <GitHubDashboard />
         <ResumeSection />
         <ContactSection />
       </main>
