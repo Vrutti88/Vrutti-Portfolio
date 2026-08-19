@@ -42,7 +42,7 @@ export const ArchitectureDiagram = ({ nodes = [] }) => {
   };
 
   return (
-    <div className="w-full bg-[#05080D] border border-bg-border rounded-xl p-3.5 my-3 font-mono text-xs select-none">
+    <div className="w-full bg-bg-surface/70 border border-bg-border rounded-xl p-3.5 my-3 font-mono text-xs select-none">
       <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2.5 flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-text-secondary font-bold">
           <Zap className="w-3 h-3 text-brand-green" />

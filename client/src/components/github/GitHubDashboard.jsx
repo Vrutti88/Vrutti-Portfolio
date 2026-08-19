@@ -133,7 +133,7 @@ export const GitHubDashboard = () => {
       case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_8px_rgba(57,211,83,0.6)]';
       case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_4px_rgba(0,109,50,0.4)]';
       case 1: return 'bg-[#0E4429] border-[#006D32]';
-      default: return 'bg-[#0D1117] border-[#21262D]/80 hover:border-brand-green/50';
+      default: return 'bg-bg-surface border-bg-border hover:border-brand-green/50';
     }
   };
 
@@ -299,7 +299,7 @@ export const GitHubDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10 items-stretch">
           
           {/* LEFT: ANIMATED ACTIVITY GRID (8 COLS ON LG) */}
-          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-brand-green/30 shadow-[0_0_35px_rgba(0,255,102,0.1)] flex flex-col justify-between relative overflow-hidden group">
+          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-bg-card border border-brand-green/30 shadow-[0_0_35px_rgba(0,255,102,0.1)] flex flex-col justify-between relative overflow-hidden group">
             
             {/* Continuous Ambient Laser Beam sweeping across grid */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -492,7 +492,7 @@ export const GitHubDashboard = () => {
           </div>
 
           {/* RIGHT: LANGUAGE BREAKDOWN (4 COLS ON LG) */}
-          <div className="lg:col-span-4 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl flex flex-col justify-between">
+          <div className="lg:col-span-4 p-6 sm:p-7 rounded-3xl bg-bg-card border border-bg-border shadow-2xl flex flex-col justify-between">
             <div>
               <div className="pb-3 mb-5 border-b border-bg-border flex items-center justify-between">
                 <h3 className="text-xs font-bold text-brand-green uppercase tracking-wider flex items-center gap-2">
@@ -508,7 +508,7 @@ export const GitHubDashboard = () => {
                   <div key={item.name} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded bg-bg-darkest border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
+                        <span className="w-5 h-5 rounded bg-bg-surface border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
                           {item.iconText}
                         </span>
                         <span className="text-text-primary font-bold">
@@ -521,7 +521,7 @@ export const GitHubDashboard = () => {
                     </div>
 
                     {/* Glowing Green Horizontal Progress Bar */}
-                    <div className="h-2 w-full rounded-full bg-bg-darkest overflow-hidden border border-bg-border">
+                    <div className="h-2 w-full rounded-full bg-bg-surface overflow-hidden border border-bg-border">
                       <div
                         className="h-full rounded-full bg-brand-green shadow-[0_0_10px_rgba(0,255,102,0.8)] transition-all duration-700"
                         style={{ width: `${item.percent}%` }}
@@ -548,9 +548,9 @@ export const GitHubDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Interactive Cyber Terminal */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="rounded-3xl bg-[#030609] border border-brand-green/40 shadow-2xl font-mono text-xs overflow-hidden">
+            <div className="rounded-3xl bg-bg-card border border-brand-green/40 shadow-2xl font-mono text-xs overflow-hidden">
               {/* macOS / Unix Window Bar */}
-              <div className="px-4 py-3 bg-[#080B10] border-b border-bg-border flex items-center justify-between">
+              <div className="px-4 py-3 bg-bg-surface border-b border-bg-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block" />
                   <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block" />
@@ -580,7 +580,7 @@ export const GitHubDashboard = () => {
               </div>
 
               {/* Terminal Screen Body */}
-              <div className="p-5 space-y-3 min-h-[260px]">
+              <div className="p-5 space-y-3 min-h-[260px] bg-bg-darkest">
                 {activeTab === 'LOG' ? (
                   <>
                     <div className="text-[11px] text-brand-green flex items-center gap-1.5 pb-2 border-b border-bg-border/40">
@@ -621,7 +621,7 @@ export const GitHubDashboard = () => {
               </div>
 
               {/* Terminal Footer */}
-              <div className="px-4 py-2.5 bg-[#080B10] border-t border-bg-border flex items-center justify-between text-[10px] text-text-muted">
+              <div className="px-4 py-2.5 bg-bg-surface border-t border-bg-border flex items-center justify-between text-[10px] text-text-muted">
                 <span className="text-brand-green flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-ping" />
                   Remote: https://github.com/{username}

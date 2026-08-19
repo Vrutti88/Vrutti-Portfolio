@@ -86,7 +86,7 @@ export const AboutSection = () => {
               </div>
 
               {/* Code Snippet */}
-              <div className="p-4 overflow-x-auto text-[11px] leading-relaxed text-text-primary bg-[#05080D]">
+              <div className="p-4 overflow-x-auto text-[11px] leading-relaxed text-text-primary bg-bg-darkest border-t border-bg-border/60">
                 <pre>
                   <span className="text-text-muted">&#123;</span>
                   {'\n  '}<span className="text-brand-purple">"name"</span>: <span className="text-brand-green-bright">"Vrutti Patil"</span>,

@@ -88,7 +88,7 @@ export const EngineeringJourney = () => {
                     ? '0 0 30px rgba(0,255,102,0.2), 0 0 10px rgba(0,255,102,0.1)' 
                     : '0 0 25px rgba(0,0,0,0.8), 0 0 15px rgba(0,255,102,0.1)'
                 }}
-                className={`p-6 sm:p-7 rounded-3xl bg-[#05080D] border transition-all duration-300 flex flex-col justify-between group relative overflow-hidden ${
+                className={`p-6 sm:p-7 rounded-3xl bg-bg-card border transition-all duration-300 flex flex-col justify-between group relative overflow-hidden ${
                   isCurrent
                     ? 'border-brand-green/50 shadow-[0_0_20px_rgba(0,255,102,0.08)]'
                     : 'border-bg-border hover:border-brand-green/40'

@@ -58,7 +58,7 @@ export const HeroVisualizer = () => {
         }}
       >
         {/* Futuristic Core Central Terminal Display */}
-        <div className="w-full max-w-md bg-[#05080D]/90 border border-brand-green/30 rounded-2xl p-5 shadow-2xl backdrop-blur-xl relative z-10">
+        <div className="w-full max-w-md bg-bg-card/95 border border-brand-green/30 rounded-2xl p-5 shadow-2xl backdrop-blur-xl relative z-10">
           {/* Header Bar */}
           <div className="flex items-center justify-between pb-3 border-b border-bg-border text-xs font-mono">
             <div className="flex items-center gap-2">

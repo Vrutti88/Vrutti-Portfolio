@@ -248,7 +248,7 @@ export const TechArsenal = () => {
         onMouseEnter={() => setHoveredSkill(skill)}
         onMouseLeave={() => setHoveredSkill(null)}
         data-cursor="INSPECT"
-        className={`relative inline-flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-[#05080D] border transition-all duration-300 group cursor-pointer flex-shrink-0 select-none ${
+        className={`relative inline-flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-bg-card border transition-all duration-300 group cursor-pointer flex-shrink-0 select-none ${
           isMismatchedFilter ? 'opacity-30 grayscale' : 'opacity-100'
         } ${isMatchingSearch ? 'ring-2 ring-brand-green ring-offset-2 ring-offset-bg-darkest shadow-glow-md' : ''}`}
         style={{
@@ -288,7 +288,7 @@ export const TechArsenal = () => {
         {/* Tooltip on Hover */}
         {isHovered && skill.usage && (
           <div
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[#030609] border text-text-primary text-xs font-mono px-3.5 py-1.5 rounded-xl shadow-[0_12px_36px_rgba(0,0,0,0.95)] whitespace-nowrap z-50 pointer-events-none flex items-center gap-2 animate-fadeIn"
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-bg-darkest border text-text-primary text-xs font-mono px-3.5 py-1.5 rounded-xl shadow-2xl whitespace-nowrap z-50 pointer-events-none flex items-center gap-2 animate-fadeIn"
             style={{ borderColor: brandColor }}
           >
             <span 
@@ -296,7 +296,7 @@ export const TechArsenal = () => {
               style={{ backgroundColor: brandColor }}
             />
             <span style={{ color: brandColor }} className="font-bold">{skill.name}:</span>
-            <span className="text-gray-200">{skill.usage}</span>
+            <span className="text-text-secondary">{skill.usage}</span>
             
             {/* Downward Arrow */}
             <div 

@@ -104,7 +104,7 @@ export const ContactSection = () => {
               </div>
 
               {/* Form Body */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-[#05080D]">
+              <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-bg-darkest border-t border-bg-border/60">
                 <div className="space-y-1.5">
                   <label className="text-text-secondary flex items-center justify-between">
                     <span>name: <span className="text-brand-green">*</span></span>
