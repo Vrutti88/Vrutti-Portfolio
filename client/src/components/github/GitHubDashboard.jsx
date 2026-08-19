@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Github, 
   GitBranch, 
@@ -12,7 +12,9 @@ import {
   Flame,
   Zap,
   Copy,
-  Check
+  Check,
+  Sparkles,
+  Radio
 } from 'lucide-react';
 import { useGitHubData } from '../../hooks/useGitHubData';
 
@@ -22,6 +24,8 @@ export const GitHubDashboard = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('ALL');
   const [hoveredCell, setHoveredCell] = useState(null);
   const [copiedRepo, setCopiedRepo] = useState(null);
+  const [animMode, setAnimMode] = useState('IDLE'); // 'IDLE' | 'WAVE' | 'SCAN' | 'RAIN'
+  const [scannerCol, setScannerCol] = useState(0);
 
   // Month labels across 30 columns for clean side-by-side fit
   const months = ['FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -96,15 +100,47 @@ export const GitHubDashboard = () => {
     , 0) + 80;
   }, [contributionMatrix]);
 
-  // Authentic GitHub Brand Green palette
-  const getGreenCellClass = (level) => {
+  // Scanner animation ticker when SCAN mode is active
+  useEffect(() => {
+    if (animMode !== 'SCAN') return;
+    const interval = setInterval(() => {
+      setScannerCol((prev) => (prev + 1) % 30);
+    }, 85);
+    return () => clearInterval(interval);
+  }, [animMode]);
+
+  // Authentic GitHub Brand Green palette with live FX states
+  const getGreenCellClass = (cell) => {
+    const { level, colIdx, rowIdx } = cell;
+
+    // Laser Scanner Mode
+    if (animMode === 'SCAN') {
+      const distance = Math.abs(colIdx - scannerCol);
+      if (distance === 0) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_18px_#00FF66] scale-125 z-20';
+      if (distance === 1) return 'bg-[#26A641] border-[#39D353] shadow-[0_0_10px_#26A641]';
+      if (distance === 2) return 'bg-[#006D32] border-[#26A641]';
+    }
+
+    // Matrix Rain Mode
+    if (animMode === 'RAIN') {
+      const isRainDrop = (colIdx * 3 + rowIdx * 7) % 11 === (Math.floor(Date.now() / 200) % 11);
+      if (isRainDrop) return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_16px_#00FF66] scale-125 z-20';
+    }
+
+    // Default resting states
     switch (level) {
       case 4: return 'bg-[#39D353] border-[#00FF66] shadow-[0_0_12px_#00FF66] animate-pulse';
-      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_8px_rgba(38,166,65,0.6)]';
+      case 3: return 'bg-[#26A641] border-[#39D353] shadow-[0_0_8px_rgba(57,211,83,0.6)]';
       case 2: return 'bg-[#006D32] border-[#26A641] shadow-[0_0_4px_rgba(0,109,50,0.4)]';
       case 1: return 'bg-[#0E4429] border-[#006D32]';
       default: return 'bg-[#0D1117] border-[#21262D]/80 hover:border-brand-green/50';
     }
+  };
+
+  // Trigger Wave Ripple Pulse
+  const handleTriggerWave = () => {
+    setAnimMode('WAVE');
+    setTimeout(() => setAnimMode('IDLE'), 2400);
   };
 
   const getLanguageColor = (lang) => {
@@ -262,11 +298,27 @@ export const GitHubDashboard = () => {
         {/* 🌟 MASTER SIDE-BY-SIDE ROW: ACTIVITY GRID (LEFT) + LANGUAGE BREAKDOWN (RIGHT) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10 items-stretch">
           
-          {/* LEFT: ACTIVITY GRID (8 COLS ON LG) */}
-          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl flex flex-col justify-between relative overflow-hidden group">
-            <div>
-              {/* Header inside Card */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4 pb-3 border-b border-bg-border/60">
+          {/* LEFT: ANIMATED ACTIVITY GRID (8 COLS ON LG) */}
+          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-brand-green/30 shadow-[0_0_35px_rgba(0,255,102,0.1)] flex flex-col justify-between relative overflow-hidden group">
+            
+            {/* Continuous Ambient Laser Beam sweeping across grid */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div
+                animate={{
+                  left: ['-20%', '120%']
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="absolute top-0 bottom-0 w-28 bg-gradient-to-r from-transparent via-brand-green/12 to-transparent pointer-events-none"
+              />
+            </div>
+
+            <div className="relative z-10">
+              {/* Header inside Card with Interactive FX controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-bg-border/60">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-bold text-brand-green tracking-wider">
@@ -279,18 +331,55 @@ export const GitHubDashboard = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] text-text-secondary hidden sm:inline">
-                    $ git activity <strong className="text-brand-green">--year=2026</strong>
-                  </span>
-                  <span className="text-sm font-bold text-brand-green">
+                {/* Animation Trigger Buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleTriggerWave}
+                    title="Trigger Ripple Wave"
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border ${
+                      animMode === 'WAVE'
+                        ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                        : 'bg-bg-surface border-bg-border text-brand-green hover:bg-brand-green/10'
+                    }`}
+                  >
+                    <Sparkles className={`w-3 h-3 ${animMode === 'WAVE' ? 'animate-spin' : ''}`} />
+                    <span>Wave FX</span>
+                  </button>
+
+                  <button
+                    onClick={() => setAnimMode(animMode === 'SCAN' ? 'IDLE' : 'SCAN')}
+                    title="Laser Scanner"
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border ${
+                      animMode === 'SCAN'
+                        ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                        : 'bg-bg-surface border-bg-border text-cyan-400 hover:bg-cyan-400/10'
+                    }`}
+                  >
+                    <Radio className={`w-3 h-3 ${animMode === 'SCAN' ? 'animate-pulse' : ''}`} />
+                    <span>{animMode === 'SCAN' ? 'Stop' : 'Laser'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => setAnimMode(animMode === 'RAIN' ? 'IDLE' : 'RAIN')}
+                    title="Matrix Rain"
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border ${
+                      animMode === 'RAIN'
+                        ? 'bg-brand-green text-black border-brand-green shadow-glow-sm'
+                        : 'bg-bg-surface border-bg-border text-purple-400 hover:bg-purple-400/10'
+                    }`}
+                  >
+                    <Zap className="w-3 h-3" />
+                    <span>{animMode === 'RAIN' ? 'Stop' : 'Rain'}</span>
+                  </button>
+
+                  <span className="text-sm font-bold text-brand-green ml-1">
                     2026
                   </span>
                 </div>
               </div>
 
               {/* Month Header Timeline */}
-              <div className="overflow-x-auto pt-2 pb-2">
+              <div className="overflow-x-auto pt-1 pb-2">
                 <div className="flex justify-between min-w-[540px] text-[10px] text-text-muted mb-2 pl-9 pr-1">
                   {months.map((m, i) => (
                     <span key={i} className="font-semibold text-text-secondary">{m}</span>
@@ -312,19 +401,30 @@ export const GitHubDashboard = () => {
                       <div key={wIdx} className="flex flex-col gap-1.5 flex-1">
                         {week.map((cell, dIdx) => {
                           const isHovered = hoveredCell === cell;
+                          const waveDelay = animMode === 'WAVE' ? (wIdx * 0.03 + dIdx * 0.02) : 0;
 
                           return (
-                            <div
+                            <motion.div
                               key={dIdx}
+                              animate={animMode === 'WAVE' ? {
+                                scale: [1, 1.45, 1],
+                                y: [0, -3, 0],
+                                boxShadow: ['0 0 0px #00FF66', '0 0 16px #00FF66', '0 0 4px #00FF66']
+                              } : {}}
+                              transition={{ delay: waveDelay, duration: 0.4 }}
                               onMouseEnter={() => setHoveredCell(cell)}
                               onMouseLeave={() => setHoveredCell(null)}
-                              className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getGreenCellClass(cell.level)} ${
-                                isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_15px_#00FF66]' : ''
+                              className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getGreenCellClass(cell)} ${
+                                isHovered ? 'scale-150 z-30 ring-2 ring-white border-white shadow-[0_0_18px_#00FF66]' : ''
                               }`}
                             >
                               {/* Hover Tooltip matching exact screenshot layout */}
                               {isHovered && (
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#030609] border border-brand-green/60 text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none animate-fadeIn space-y-1.5">
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#030609] border border-brand-green text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none space-y-1.5"
+                                >
                                   <div className="text-[11px] font-bold text-text-primary">
                                     {cell.dateStr}
                                   </div>
@@ -357,9 +457,9 @@ export const GitHubDashboard = () => {
                                   
                                   {/* Downward Pointer */}
                                   <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-brand-green" />
-                                </div>
+                                </motion.div>
                               )}
-                            </div>
+                            </motion.div>
                           );
                         })}
                       </div>
@@ -370,7 +470,7 @@ export const GitHubDashboard = () => {
             </div>
 
             {/* Heatmap Legend & Footer */}
-            <div className="mt-4 pt-3 border-t border-bg-border/60 flex items-center justify-between text-[10px] text-text-muted">
+            <div className="mt-4 pt-3 border-t border-bg-border/60 flex items-center justify-between text-[10px] text-text-muted relative z-10">
               <div className="flex items-center gap-2">
                 <span>Less</span>
                 <div className="flex items-center gap-1">
