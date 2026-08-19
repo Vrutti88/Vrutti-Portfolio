@@ -69,15 +69,15 @@ export const CaseStudyModal = ({ project, onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            {project.github && (
+            {project.liveDemo && (
               <a
-                href={project.github}
+                href={project.liveDemo}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs font-mono text-text-secondary hover:text-brand-green flex items-center gap-1"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-green/15 border border-brand-green/40 text-xs font-mono text-brand-green hover:bg-brand-green hover:text-black transition-all"
               >
-                {/* <Github className="w-4 h-4" /> */}
-                {/* <span className="hidden sm:inline">Repo</span> */}
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Live Demo</span>
               </a>
             )}
             <button
@@ -253,6 +253,19 @@ export const CaseStudyModal = ({ project, onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
+            {project.liveDemo && (
+              <a
+                href={project.liveDemo}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-green/15 border border-brand-green/40 text-xs font-mono text-brand-green hover:bg-brand-green hover:text-black transition-all"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>Live Demo</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+            )}
+
             {project.github && (
               <a
                 href={project.github}
