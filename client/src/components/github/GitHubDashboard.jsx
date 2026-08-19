@@ -23,48 +23,48 @@ export const GitHubDashboard = () => {
   const [hoveredCell, setHoveredCell] = useState(null);
   const [copiedRepo, setCopiedRepo] = useState(null);
 
-  // Month labels across 36 columns
-  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  // Month labels across 30 columns for clean side-by-side fit
+  const months = ['FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const dayLabels = ['MON', '', 'WED', '', 'FRI', '', ''];
 
-  // Generate 36-week contribution matrix (36 cols x 7 rows)
+  // Generate 30-week contribution matrix (30 cols x 7 rows)
   const contributionMatrix = useMemo(() => {
     const matrix = [];
     const baseDate = new Date(2026, 7, 19); // Aug 19, 2026
     
-    for (let w = 0; w < 36; w++) {
+    for (let w = 0; w < 30; w++) {
       const days = [];
       for (let d = 0; d < 7; d++) {
-        const dayOffset = (35 - w) * 7 + (6 - d);
+        const dayOffset = (29 - w) * 7 + (6 - d);
         const cellDate = new Date(baseDate);
         cellDate.setDate(baseDate.getDate() - dayOffset);
         
-        const seed = (w * 17 + d * 23 + 11) % 100;
+        const seed = (w * 19 + d * 29 + 13) % 100;
         let level = 0;
         let count = 0;
         let apiChanges = 0;
         let featureUpdates = 0;
         let docUpdates = 0;
 
-        if (seed > 85) {
+        if (seed > 84) {
           level = 4;
           count = 7 + (seed % 6);
           apiChanges = 3;
           featureUpdates = Math.floor(count / 2) - 1;
           docUpdates = count - apiChanges - featureUpdates;
-        } else if (seed > 65) {
+        } else if (seed > 62) {
           level = 3;
           count = 4 + (seed % 3);
           apiChanges = 2;
           featureUpdates = 2;
           docUpdates = count - 4;
-        } else if (seed > 42) {
+        } else if (seed > 40) {
           level = 2;
           count = 2 + (seed % 2);
           apiChanges = 1;
           featureUpdates = 1;
           docUpdates = count - 2;
-        } else if (seed > 20) {
+        } else if (seed > 18) {
           level = 1;
           count = 1;
           apiChanges = 1;
@@ -93,7 +93,7 @@ export const GitHubDashboard = () => {
   const totalCommitsCount = useMemo(() => {
     return contributionMatrix.reduce((acc, week) => 
       acc + week.reduce((dAcc, day) => dAcc + day.count, 0)
-    , 0) + 65;
+    , 0) + 80;
   }, [contributionMatrix]);
 
   // Authentic GitHub Brand Green palette
@@ -259,170 +259,189 @@ export const GitHubDashboard = () => {
           </motion.div>
         </div>
 
-        {/* 🌟 ENGINEERING ACTIVITY GRID (Authentic GitHub Green Theme) */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl mb-8 relative overflow-hidden group">
-          {/* Header inside Card */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4 pb-3 border-b border-bg-border/60">
+        {/* 🌟 MASTER SIDE-BY-SIDE ROW: ACTIVITY GRID (LEFT) + LANGUAGE BREAKDOWN (RIGHT) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10 items-stretch">
+          
+          {/* LEFT: ACTIVITY GRID (8 COLS ON LG) */}
+          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl flex flex-col justify-between relative overflow-hidden group">
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-bold text-brand-green tracking-wider">
-                  ENGINEERING ACTIVITY
-                </h3>
-                <span className="w-2 h-2 rounded-full bg-brand-green animate-ping" />
-              </div>
-              <p className="text-xs text-text-muted mt-0.5">
-                // Every square represents a step forward.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-text-secondary">
-                $ git activity <strong className="text-brand-green">--year=2026</strong>
-              </span>
-              <span className="text-base font-bold text-brand-green">
-                2026
-              </span>
-            </div>
-          </div>
-
-          {/* Month Header Timeline */}
-          <div className="overflow-x-auto pt-4 pb-2">
-            <div className="flex justify-between min-w-[680px] text-[10px] text-text-muted mb-2.5 pl-9 pr-1">
-              {months.map((m, i) => (
-                <span key={i} className="font-semibold text-text-secondary">{m}</span>
-              ))}
-            </div>
-
-            {/* Contribution Grid Container */}
-            <div className="flex gap-2 min-w-[680px]">
-              {/* Day of Week Labels */}
-              <div className="flex flex-col justify-between text-[9px] text-text-muted font-mono pr-1 select-none">
-                {dayLabels.map((day, i) => (
-                  <span key={i} className="h-3 flex items-center font-bold text-text-secondary">{day}</span>
-                ))}
-              </div>
-
-              {/* 36 Week Columns */}
-              <div className="flex gap-1.5 flex-1 relative">
-                {contributionMatrix.map((week, wIdx) => (
-                  <div key={wIdx} className="flex flex-col gap-1.5 flex-1">
-                    {week.map((cell, dIdx) => {
-                      const isHovered = hoveredCell === cell;
-
-                      return (
-                        <div
-                          key={dIdx}
-                          onMouseEnter={() => setHoveredCell(cell)}
-                          onMouseLeave={() => setHoveredCell(null)}
-                          className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getGreenCellClass(cell.level)} ${
-                            isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_15px_#00FF66]' : ''
-                          }`}
-                        >
-                          {/* Hover Tooltip matching exact screenshot layout */}
-                          {isHovered && (
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#030609] border border-brand-green/60 text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none animate-fadeIn space-y-1.5">
-                              <div className="text-[11px] font-bold text-text-primary">
-                                {cell.dateStr}
-                              </div>
-                              <div className="text-[10px] text-text-secondary">
-                                {cell.count} {cell.count === 1 ? 'contribution' : 'contributions'}
-                              </div>
-
-                              {cell.count > 0 && (
-                                <div className="pt-1.5 border-t border-bg-border/60 space-y-1 text-[10px]">
-                                  {cell.apiChanges > 0 && (
-                                    <div className="flex items-center gap-1.5 text-text-secondary">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
-                                      <span>{cell.apiChanges} API changes</span>
-                                    </div>
-                                  )}
-                                  {cell.featureUpdates > 0 && (
-                                    <div className="flex items-center gap-1.5 text-text-secondary">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
-                                      <span>{cell.featureUpdates} Feature updates</span>
-                                    </div>
-                                  )}
-                                  {cell.docUpdates > 0 && (
-                                    <div className="flex items-center gap-1.5 text-text-secondary">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0" />
-                                      <span>{cell.docUpdates} Documentation</span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              
-                              {/* Downward Pointer */}
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-brand-green" />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Heatmap Legend */}
-          <div className="mt-5 pt-3 border-t border-bg-border/60 flex items-center justify-between text-[10px] text-text-muted">
-            <div className="flex items-center gap-2">
-              <span>Less</span>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-[3px] bg-[#0D1117] border border-[#21262D]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#0E4429] border border-[#006D32]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#006D32] border border-[#26A641]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#26A641] border border-[#39D353]" />
-                <div className="w-3 h-3 rounded-[3px] bg-[#39D353] border border-[#00FF66]" />
-              </div>
-              <span>More</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-text-secondary">🔥 18 Day Active Sprint</span>
-              <span>•</span>
-              <span className="text-brand-green font-bold">{totalCommitsCount}+ Commits</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 🌟 LANGUAGE BREAKDOWN (Green GitHub Theme) */}
-        <div className="p-6 sm:p-7 rounded-3xl bg-bg-card border border-bg-border shadow-xl mb-10">
-          <div className="pb-3 mb-5 border-b border-bg-border flex items-center justify-between">
-            <h3 className="text-xs font-bold text-brand-green uppercase tracking-wider flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-brand-green" />
-              LANGUAGE BREAKDOWN
-            </h3>
-            <span className="text-[10px] text-text-muted">Production Codebase Weight</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {languageStats.map((item) => (
-              <div key={item.name} className="p-4 rounded-2xl bg-bg-surface/80 border border-bg-border flex flex-col justify-between space-y-3">
-                <div className="flex items-center justify-between">
+              {/* Header inside Card */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4 pb-3 border-b border-bg-border/60">
+                <div>
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded bg-bg-darkest border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
-                      {item.iconText}
-                    </span>
-                    <span className="text-text-primary font-bold text-xs">
-                      {item.name}
-                    </span>
+                    <h3 className="text-base font-bold text-brand-green tracking-wider">
+                      ENGINEERING ACTIVITY
+                    </h3>
+                    <span className="w-2 h-2 rounded-full bg-brand-green animate-ping" />
                   </div>
-                  <span className="text-brand-green text-xs font-bold font-mono">
-                    {item.percent}%
+                  <p className="text-xs text-text-muted mt-0.5">
+                    // Every square represents a step forward.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] text-text-secondary hidden sm:inline">
+                    $ git activity <strong className="text-brand-green">--year=2026</strong>
+                  </span>
+                  <span className="text-sm font-bold text-brand-green">
+                    2026
                   </span>
                 </div>
+              </div>
 
-                {/* Vibrant Green Horizontal Progress Bar */}
-                <div className="h-2 w-full rounded-full bg-bg-darkest overflow-hidden border border-bg-border">
-                  <div
-                    className="h-full rounded-full bg-brand-green shadow-[0_0_10px_rgba(0,255,102,0.8)] transition-all duration-700"
-                    style={{ width: `${item.percent}%` }}
-                  />
+              {/* Month Header Timeline */}
+              <div className="overflow-x-auto pt-2 pb-2">
+                <div className="flex justify-between min-w-[540px] text-[10px] text-text-muted mb-2 pl-9 pr-1">
+                  {months.map((m, i) => (
+                    <span key={i} className="font-semibold text-text-secondary">{m}</span>
+                  ))}
+                </div>
+
+                {/* Contribution Grid Container */}
+                <div className="flex gap-2 min-w-[540px]">
+                  {/* Day of Week Labels */}
+                  <div className="flex flex-col justify-between text-[9px] text-text-muted font-mono pr-1 select-none">
+                    {dayLabels.map((day, i) => (
+                      <span key={i} className="h-3 flex items-center font-bold text-text-secondary">{day}</span>
+                    ))}
+                  </div>
+
+                  {/* 30 Week Columns */}
+                  <div className="flex gap-1.5 flex-1 relative">
+                    {contributionMatrix.map((week, wIdx) => (
+                      <div key={wIdx} className="flex flex-col gap-1.5 flex-1">
+                        {week.map((cell, dIdx) => {
+                          const isHovered = hoveredCell === cell;
+
+                          return (
+                            <div
+                              key={dIdx}
+                              onMouseEnter={() => setHoveredCell(cell)}
+                              onMouseLeave={() => setHoveredCell(null)}
+                              className={`w-full aspect-square rounded-[3px] border transition-all duration-200 cursor-pointer relative ${getGreenCellClass(cell.level)} ${
+                                isHovered ? 'scale-135 z-30 ring-2 ring-white border-white shadow-[0_0_15px_#00FF66]' : ''
+                              }`}
+                            >
+                              {/* Hover Tooltip matching exact screenshot layout */}
+                              {isHovered && (
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-52 p-3 rounded-xl bg-[#030609] border border-brand-green/60 text-xs font-mono text-text-primary shadow-[0_12px_30px_rgba(0,0,0,0.95)] z-50 pointer-events-none animate-fadeIn space-y-1.5">
+                                  <div className="text-[11px] font-bold text-text-primary">
+                                    {cell.dateStr}
+                                  </div>
+                                  <div className="text-[10px] text-text-secondary">
+                                    {cell.count} {cell.count === 1 ? 'contribution' : 'contributions'}
+                                  </div>
+
+                                  {cell.count > 0 && (
+                                    <div className="pt-1.5 border-t border-bg-border/60 space-y-1 text-[10px]">
+                                      {cell.apiChanges > 0 && (
+                                        <div className="flex items-center gap-1.5 text-text-secondary">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
+                                          <span>{cell.apiChanges} API changes</span>
+                                        </div>
+                                      )}
+                                      {cell.featureUpdates > 0 && (
+                                        <div className="flex items-center gap-1.5 text-text-secondary">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
+                                          <span>{cell.featureUpdates} Feature updates</span>
+                                        </div>
+                                      )}
+                                      {cell.docUpdates > 0 && (
+                                        <div className="flex items-center gap-1.5 text-text-secondary">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0" />
+                                          <span>{cell.docUpdates} Documentation</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Downward Pointer */}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-solid border-t-5 border-x-transparent border-x-5 border-b-0 border-t-brand-green" />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Heatmap Legend & Footer */}
+            <div className="mt-4 pt-3 border-t border-bg-border/60 flex items-center justify-between text-[10px] text-text-muted">
+              <div className="flex items-center gap-2">
+                <span>Less</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-[3px] bg-[#0D1117] border border-[#21262D]" />
+                  <div className="w-3 h-3 rounded-[3px] bg-[#0E4429] border border-[#006D32]" />
+                  <div className="w-3 h-3 rounded-[3px] bg-[#006D32] border border-[#26A641]" />
+                  <div className="w-3 h-3 rounded-[3px] bg-[#26A641] border border-[#39D353]" />
+                  <div className="w-3 h-3 rounded-[3px] bg-[#39D353] border border-[#00FF66]" />
+                </div>
+                <span>More</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-text-secondary">🔥 18 Day Streak</span>
+                <span>•</span>
+                <span className="text-brand-green font-bold">{totalCommitsCount}+ Commits</span>
+              </div>
+            </div>
           </div>
+
+          {/* RIGHT: LANGUAGE BREAKDOWN (4 COLS ON LG) */}
+          <div className="lg:col-span-4 p-6 sm:p-7 rounded-3xl bg-[#04070D] border border-bg-border shadow-2xl flex flex-col justify-between">
+            <div>
+              <div className="pb-3 mb-5 border-b border-bg-border flex items-center justify-between">
+                <h3 className="text-xs font-bold text-brand-green uppercase tracking-wider flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-brand-green" />
+                  LANGUAGE BREAKDOWN
+                </h3>
+                <span className="text-[10px] text-text-muted font-bold">2026 Core</span>
+              </div>
+
+              {/* Vertical Stack of Languages with Green Progress Bars */}
+              <div className="space-y-4">
+                {languageStats.map((item) => (
+                  <div key={item.name} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded bg-bg-darkest border border-bg-border flex items-center justify-center text-[10px] font-bold text-yellow-400">
+                          {item.iconText}
+                        </span>
+                        <span className="text-text-primary font-bold">
+                          {item.name}
+                        </span>
+                      </div>
+                      <span className="text-brand-green font-bold text-xs font-mono">
+                        {item.percent}%
+                      </span>
+                    </div>
+
+                    {/* Glowing Green Horizontal Progress Bar */}
+                    <div className="h-2 w-full rounded-full bg-bg-darkest overflow-hidden border border-bg-border">
+                      <div
+                        className="h-full rounded-full bg-brand-green shadow-[0_0_10px_rgba(0,255,102,0.8)] transition-all duration-700"
+                        style={{ width: `${item.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer Summary Strip */}
+            <div className="mt-6 pt-4 border-t border-bg-border/60 flex items-center justify-between text-[11px] text-text-muted">
+              <span>Primary Engine</span>
+              <span className="text-brand-green font-bold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-ping" />
+                MERN &amp; Microservices
+              </span>
+            </div>
+          </div>
+
         </div>
 
         {/* BOTTOM SECTION: INTERACTIVE DEVELOPER TERMINAL + REPOSITORIES */}
