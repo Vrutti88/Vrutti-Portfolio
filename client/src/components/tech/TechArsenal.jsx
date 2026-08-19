@@ -270,21 +270,14 @@ export const TechArsenal = () => {
         </div>
 
         {/* Skill Name */}
-        <div className="flex flex-col">
-          <span 
-            className="font-mono text-xs sm:text-sm font-bold text-text-primary transition-colors whitespace-nowrap"
-            style={{
-              color: isHovered ? brandColor : undefined
-            }}
-          >
-            {skill.name}
-          </span>
-          {skill.level && (
-            <span className="text-[9px] font-mono text-text-muted hidden sm:inline">
-              {skill.level}
-            </span>
-          )}
-        </div>
+        <span 
+          className="font-mono text-xs sm:text-sm font-bold text-text-primary transition-colors whitespace-nowrap"
+          style={{
+            color: isHovered ? brandColor : undefined
+          }}
+        >
+          {skill.name}
+        </span>
 
         {/* Pulsing Brand Dot */}
         <span 
