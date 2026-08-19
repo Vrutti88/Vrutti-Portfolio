@@ -424,7 +424,7 @@ export const portfolioData = {
         security: "Device API Token Authentication"
       },
       github: "https://github.com/Vrutti88/HomeConnect",
-      liveDemo: "https://github.com/Vrutti88/HomeConnect",
+      liveDemo: "https://home-connect-proj.vercel.app",
       featured: false
     }
   ],
